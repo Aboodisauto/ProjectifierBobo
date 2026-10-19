@@ -1,0 +1,45 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET build output
+**/bin/
+**/obj/
+**/TestResults/
+**/artifacts/
+*.pdb
+*.cache
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/secrets.json
+**/secrets.*.json
+*.publishsettings
+*.publish.xml
+
+# Frontend dependencies and generated output
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+**/coverage/
+
+# Local tooling and operating system files
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.old

@@ -1,0 +1,6 @@
+@WezProjectifier_HostAddress = http://localhost:5168
+
+GET {{WezProjectifier_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

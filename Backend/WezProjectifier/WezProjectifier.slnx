@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../WezProjectifierBLL/WezProjectifierBLL.csproj" />
+  <Project Path="../WezProjectifierDAL/WezProjectifierDAL.csproj" />
+  <Project Path="WezProjectifier.csproj" />
+</Solution>
