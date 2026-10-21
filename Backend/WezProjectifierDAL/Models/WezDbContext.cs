@@ -21,6 +21,8 @@ public partial class WezDbContext : DbContext
 
     public virtual DbSet<Project> Projects { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<ProjectTask> Tasks { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -52,6 +54,8 @@ public partial class WezDbContext : DbContext
         {
             entity.ToTable("Member");
 
+            entity.HasIndex(e => new { e.UserId, e.ProjectId }, "UQ_MEMBER_USERPROJECT").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
             entity.Property(e => e.Role).HasMaxLength(10);
@@ -79,6 +83,22 @@ public partial class WezDbContext : DbContext
                 .HasConstraintName("FK_Projects_User");
         });
 
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.RefreshToken1);
+            entity.HasIndex(rt => new { rt.UserId, rt.RefreshToken1 }).IsUnique();
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+            entity.Property(e => e.RefreshToken1)
+                .HasMaxLength(128)
+                .HasColumnName("RefreshToken");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RefreshTokens_User");
+        });
+
         modelBuilder.Entity<ProjectTask>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("ID");
@@ -97,19 +117,20 @@ public partial class WezDbContext : DbContext
         {
             entity.ToTable("User");
 
+            entity.HasIndex(e => e.Email, "UQ_CONSTRAINT_EMAIL").IsUnique();
+
+            entity.HasIndex(e => e.Phonenumber, "UQ_CONSTRAINT_Phonenumber").IsUnique();
+
+            entity.HasIndex(e => e.Username, "UQ_CONSTRAINT_USER").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Address).HasMaxLength(50);
-            entity.Property(e => e.Email).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Firstname).HasMaxLength(50);
             entity.Property(e => e.Lastname).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(256);
             entity.Property(e => e.Phonenumber).HasMaxLength(18);
             entity.Property(e => e.Username).HasMaxLength(50);
-
-            entity.HasIndex(e => e.Email, "UQ_CONSTRAINT_EMAIL").IsUnique();
-            entity.HasIndex(e => e.Username, "UQ_CONSTRAINT_USER").IsUnique();
-            entity.HasIndex(e => e.Phonenumber, "UQ_CONSTRAINT_Phonenumber").IsUnique();
-
         });
 
         OnModelCreatingPartial(modelBuilder);

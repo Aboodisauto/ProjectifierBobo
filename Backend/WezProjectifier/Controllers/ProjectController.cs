@@ -97,5 +97,22 @@ namespace WezProjectifier.Controllers
                 title:"Not Found !",detail:"No Project found with this id")
             };
         }
+
+        [HttpGet("getProjectFor/{userId::int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<HashSet<ProjectSummaryDTO>>> GetAllProjectsForUser(int userId)
+        {
+            var result = await _projects.GetAllProjectsForUser(userId);
+
+            return result.OperationResult switch
+            {
+                enOperationResult.Success => Ok(result.Value),
+                enOperationResult.InvalidData => BadRequest("Enter a valid userId ."),
+                enOperationResult.NotFound => NotFound("No user with that id exists"),
+                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")
+            };
+        }
     }
 }

@@ -12,5 +12,6 @@ public enum enOperationResult
     NotFound,
     NotFound2,
     InvalidSkillLevel,
-    Conflict
+    Conflict,
+    Expired
 }

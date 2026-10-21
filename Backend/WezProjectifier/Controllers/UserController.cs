@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WezProjectifier.Models;
 using WezProjectifierBLL;
 using WezProjectifierBLL.DTOs;
@@ -18,6 +19,7 @@ namespace WezProjectifier.Controllers
 
 
         [HttpPost(Name = "create")]
+        [Authorize]
         [ProducesResponseType((int)StatusCodes.Status201Created)]
         [ProducesResponseType((int)StatusCodes.Status400BadRequest)]
         [ProducesResponseType((int)StatusCodes.Status409Conflict)]
@@ -44,6 +46,7 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize]
         [ProducesResponseType((int)StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> fetchAllUsers()

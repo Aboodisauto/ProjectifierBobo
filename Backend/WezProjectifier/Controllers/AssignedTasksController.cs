@@ -57,6 +57,14 @@ namespace WezProjectifier.Controllers
         public async Task<ActionResult> UnassignTaskFromUser(int taskId, int projectId, int userId)
         {
             var result = await _tasksService.UnassignTaskFromUserAsync(taskId, projectId, userId);
+
+            return result.OperationResult switch 
+            {
+                enOperationResult.Success => Ok(result.Value),
+                enOperationResult.NotFound => NotFound("User/Task/Project doesn't exist"),
+                enOperationResult.InvalidData => BadRequest("Enter a valid inputs"),
+                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")
+            };
         }
     }
 }

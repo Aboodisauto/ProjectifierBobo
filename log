@@ -1,0 +1,2882 @@
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e2ef324[m
+[1m--- /dev/null[m
+[1m+++ b/.gitignore[m
+[36m@@ -0,0 +1,45 @@[m
+[32m+[m[32m# Visual Studio[m
+[32m+[m[32m.vs/[m
+[32m+[m[32m*.suo[m
+[32m+[m[32m*.user[m
+[32m+[m[32m*.userosscache[m
+[32m+[m[32m*.sln.docstates[m
+[32m+[m
+[32m+[m[32m# .NET build output[m
+[32m+[m[32m**/bin/[m
+[32m+[m[32m**/obj/[m
+[32m+[m[32m**/TestResults/[m
+[32m+[m[32m**/artifacts/[m
+[32m+[m[32m*.pdb[m
+[32m+[m[32m*.cache[m
+[32m+[m
+[32m+[m[32m# Local configuration and secrets[m
+[32m+[m[32m.env[m
+[32m+[m[32m.env.*[m
+[32m+[m[32m!.env.example[m
+[32m+[m[32m**/appsettings.Development.json[m
+[32m+[m[32m**/secrets.json[m
+[32m+[m[32m**/secrets.*.json[m
+[32m+[m[32m*.publishsettings[m
+[32m+[m[32m*.publish.xml[m
+[32m+[m
+[32m+[m[32m# Frontend dependencies and generated output[m
+[32m+[m[32m**/node_modules/[m
+[32m+[m[32m**/dist/[m
+[32m+[m[32m**/build/[m
+[32m+[m[32m**/.next/[m
+[32m+[m[32m**/coverage/[m
+[32m+[m
+[32m+[m[32m# Local tooling and operating system files[m
+[32m+[m[32m.vscode/[m
+[32m+[m[32m.DS_Store[m
+[32m+[m[32mThumbs.db[m
+[32m+[m[32mDesktop.ini[m
+[32m+[m
+[32m+[m[32m# Logs[m
+[32m+[m[32m*.log[m
+[32m+[m
+[32m+[m[32m# Temporary and backup files[m
+[32m+[m[32m*.tmp[m
+[32m+[m[32m*.bak[m
+[32m+[m[32m*.old[m
+\ No newline at end of file[m
+[1mdiff --git a/Backend/WezProjectifier/.gitignore b/Backend/WezProjectifier/.gitignore[m
+[1mnew file mode 100644[m
+[1mindex 0000000..59acd38[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/.gitignore[m
+[36m@@ -0,0 +1,8 @@[m
+[32m+[m[32m﻿################################################################################[m
+[32m+[m[32m# This .gitignore file was automatically created by Microsoft(R) Visual Studio.[m
+[32m+[m[32m################################################################################[m
+[32m+[m
+[32m+[m[32m/bin/Debug/net10.0[m
+[32m+[m[32m/.vs/ProjectEvaluation[m
+[32m+[m[32m/.vs[m
+[32m+[m[32m/obj[m
+[1mdiff --git a/Backend/WezProjectifier/Backend/WezProjectifierBLL/Services/clsTaskService.cs b/Backend/WezProjectifier/Backend/WezProjectifierBLL/Services/clsTaskService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e69de29[m
+[1mdiff --git a/Backend/WezProjectifier/Controllers/AssignedTasksController.cs b/Backend/WezProjectifier/Controllers/AssignedTasksController.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e5a6b7e[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Controllers/AssignedTasksController.cs[m
+[36m@@ -0,0 +1,62 @@[m
+[32m+[m[32m﻿using Microsoft.AspNetCore.Http;[m
+[32m+[m[32musing Microsoft.AspNetCore.Mvc;[m
+[32m+[m[32musing WezProjectifierBLL;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Controllers[m
+[32m+[m[32m{[m
+[32m+[m[32m    [Route("api/[controller]")][m
+[32m+[m[32m    [ApiController][m
+[32m+[m[32m    public class AssignedTasksController : ControllerBase[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly clsAssignedTasksService _tasksService;[m
+[32m+[m
+[32m+[m[32m        public AssignedTasksController (clsAssignedTasksService tasksService)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _tasksService = tasksService;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("getById/{projectId::int}/{userId::int}")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        public async Task<ActionResult> GetTasksForPersonInProject(int userId, int projectId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasksService.GetAllAssignedTasksAsync(projectId, userId);[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please enter valid userId/projectId"),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("User/Project you entered doesn't exist"),[m
+[32m+[m[32m                enOperationResult.NotFound2 => NotFound("That is user is not a part of that project"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPost("assign/{taskId::int}/{projectId::int}/{userId::int}")][m
+[32m+[m[32m        [ProducesResponseType(201)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult> AssignTaskToUser(int taskId, int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasksService.AssignTaskToUserAsync(taskId, projectId, userId);[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok("The task was assigned to the user"),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Task/Project/User does not exist"),[m
+[32m+[m[32m                enOperationResult.NotFound2 => NotFound("The member was not assigned to the project"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please enter valid data"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpDelete("unassign/{taskId::int}/{projectId::int}/{userId::int}")][m
+[32m+[m[32m        [ProducesResponseType(201)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult> UnassignTaskFromUser(int taskId, int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasksService.UnassignTaskFromUserAsync(taskId, projectId, userId);[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/Controllers/MemberController.cs b/Backend/WezProjectifier/Controllers/MemberController.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..155cd4b[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Controllers/MemberController.cs[m
+[36m@@ -0,0 +1,76 @@[m
+[32m+[m[32m﻿using Microsoft.AspNetCore.Http;[m
+[32m+[m[32musing Microsoft.AspNetCore.Mvc;[m
+[32m+[m[32musing WezProjectifierBLL;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Members;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Controllers[m
+[32m+[m[32m{[m
+[32m+[m[32m    [Route("api/[controller]")][m
+[32m+[m[32m    [ApiController][m
+[32m+[m[32m    public class MemberController : ControllerBase[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly clsMemberService _member;[m
+[32m+[m[41m        [m
+[32m+[m
+[32m+[m[32m        public MemberController(clsMemberService memberService)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _member = memberService;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPost("addMemberToProject/{projectID::int}/{userID::int}/{role}")][m
+[32m+[m[32m        [ProducesResponseType(201)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        [ProducesResponseType(409)][m
+[32m+[m[32m        public async Task<ActionResult<AddMemberResponseDTO>> AddMemberToProject(int projectID, int userID,string role)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _member.AddUserToProject(projectID, userID, role);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Project/User with this id doesn't exist"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please validate your inputs"),[m
+[32m+[m[32m                enOperationResult.AlreadyExist => Conflict("This user is already added to the project"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("all/{projectId::int}")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult<List<UserSummaryDTO>>> GetAllUsersInProject(int projectId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _member.GetAllMembers(projectId);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m[41m [m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Project with this id doesn't exist"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please validate your input"),[m
+[32m+[m[32m                _ => Problem(statusCode: 500, title: "Internal server error", detail: "Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpDelete("remove/{projectId::int}/{userId::int}")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult> RemoveUserFromProjectAsync(int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _member.RemoveUserFromProjectAsync(projectId, userId);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok("Succesfuly removed the member from the project"),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("That member is not registered in the project"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please enter valid userId and projectId"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")[m
+[32m+[m[41m                [m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/Controllers/ProjectController.cs b/Backend/WezProjectifier/Controllers/ProjectController.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3f37e9e[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Controllers/ProjectController.cs[m
+[36m@@ -0,0 +1,101 @@[m
+[32m+[m[32m﻿using Microsoft.AspNetCore.Http;[m
+[32m+[m[32musing Microsoft.AspNetCore.Mvc;[m
+[32m+[m[32musing WezProjectifierBLL;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Controllers[m
+[32m+[m[32m{[m
+[32m+[m[32m    [Route("api/[controller]")][m
+[32m+[m[32m    [ApiController][m
+[32m+[m[32m    public class ProjectController : ControllerBase[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly clsProjectService _projects;[m
+[32m+[m[32m        public ProjectController(clsProjectService projects)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _projects = projects;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("all", Name = "FetchAllProjects")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(500)][m
+[32m+[m[32m        public async Task<ActionResult<ProjectSummaryDTO>> GetAllProjectsAsync()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _projects.GetAllProjects();[m
+[32m+[m[32m            return Ok(result);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("getById/{id::int}",Name = "GetProjectByID")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult<GetProjectInfoDTO>> GetProjectByID(int id)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _projects.GetProjectInfoAsync(id);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.NotFound => Problem([m
+[32m+[m[32m                    statusCode: StatusCodes.Status404NotFound,[m
+[32m+[m[32m                    title: "Not Found !",[m
+[32m+[m[32m                    detail: "Enter a valid project id"),[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                _ => Problem(statusCode:500,[m
+[32m+[m[32m                title:"Internal Server Error",[m
+[32m+[m[32m                detail:"Hold on until we fix the server")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPost("Add", Name = "AddNewProject")][m
+[32m+[m[32m        [ProducesResponseType(201)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status400BadRequest)][m
+[32m+[m[32m        public async Task<ActionResult<AddNewProjectResponseDTO>> AddNewProject([FromBody] AddNewProjectRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _projects.AddNewProjectAsync(dto);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Created(string.Empty, result.Value),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest(result),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem([m
+[32m+[m[32m                    statusCode:404,[m
+[32m+[m[32m                    title:"Invalid CreatedBy ID",[m
+[32m+[m[32m                    detail:"The owner was not found among the users table"[m
+[32m+[m[32m                    ),[m
+[32m+[m[32m                _ => Problem(statusCode: 500, title: "Internal Server Error", detail: "Hold on until we fix the server")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPut("update/",Name = "UpdateProject")][m
+[32m+[m[32m        public async Task<ActionResult<AddNewProjectResponseDTO>> UpdateExistingProject([m
+[32m+[m[32m            [FromBody] UpdateProjectRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var updated = await _projects.UpdateProjectAsync(dto);[m
+[32m+[m
+[32m+[m[32m            return updated.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(updated.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem(statusCode:404,[m
+[32m+[m[32m                title:"Not Found !",[m
+[32m+[m[32m                detail:"There's no project with this id"),[m
+[32m+[m[32m                enOperationResult.Failed => Problem(statusCode:500,[m
+[32m+[m[32m                title:"Internal Server Error",[m
+[32m+[m[32m                detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpDelete("delete/{id::int}", Name = "DeleteProject")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult<bool>> DeleteProjectAsync(int id)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _projects.DeleteProjecyAsync(id);[m
+[32m+[m[32m            return result.OperationResult switch {[m
+[32m+[m[32m                enOperationResult.Success => Ok($"Succesfuly deleted the proejct with id {id}"),[m
+[32m+[m[32m                enOperationResult.Failed => Problem(statusCode:500,[m
+[32m+[m[32m                title:"Internal Server Error",detail:"Hold on until we fix the issue"),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem(statusCode:404,[m
+[32m+[m[32m                title:"Not Found !",detail:"No Project found with this id")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/Controllers/ProjectTaskController.cs b/Backend/WezProjectifier/Controllers/ProjectTaskController.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..5b62bbb[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Controllers/ProjectTaskController.cs[m
+[36m@@ -0,0 +1,93 @@[m
+[32m+[m[32m﻿using Microsoft.AspNetCore.Http;[m
+[32m+[m[32musing Microsoft.AspNetCore.Mvc;[m
+[32m+[m[32musing WezProjectifierBLL;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Tasks;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Controllers[m
+[32m+[m[32m{[m
+[32m+[m[32m    [Route("api/[controller]")][m
+[32m+[m[32m    [ApiController][m
+[32m+[m[32m    public class ProjectTaskController : ControllerBase[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly clsTaskService _tasks;[m
+[32m+[m[32m        public ProjectTaskController (clsTaskService taskService)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _tasks = taskService;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("all/{projectId::int}",Name = "GetAllTasks")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult<List<TaskDTO>>> GetAllTasksForProjectAsync(int projectId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasks.GetAllTasksAsync(projectId);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Project with id doesn't exist"),[m
+[32m+[m[32m                _ => Problem(statusCode:500[m
+[32m+[m[32m                ,title:"Internal server error"[m
+[32m+[m[32m                ,detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPost("addTask",Name = "AddTaskToProject")][m
+[32m+[m[32m        [ProducesResponseType(201)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        public async Task<ActionResult<bool>> AddNewTaskToProject(AddTaskRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasks.CreateAddTaskToProjectAsync(dto);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m[41m [m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("There's no existing project with this ID"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please Enter Valid Naming and Data"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[41m        [m
+[32m+[m
+[32m+[m[32m        [HttpPut("editTask")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        public async Task<ActionResult<UpdateTaskResponseDTO>> UpdateTask([m
+[32m+[m[32m            [FromBody] UpdateTaskRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasks.UpdateTaskAsync(dto);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m[41m [m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Please check your task/project id, because they don't exist"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please check your input"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal server error",detail:"Hold on until we fix this issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpDelete("delete/{projectId::int}/{taskId::int}",Name = "DeleteTaskFromProject")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        public async Task<ActionResult<bool>> DeleteTaskFromProjectAsync(int projectId,int taskId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _tasks.DeleteTaskFromProjectAsync(projectId, taskId);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok("Succesfuly deleted the task"),[m
+[32m+[m[32m                enOperationResult.NotFound => NotFound("Project/Task doesn't exist"),[m
+[32m+[m[32m                enOperationResult.InvalidData => BadRequest("Please enter a valid id"),[m
+[32m+[m[32m                _ => Problem(statusCode:500,title:"Internal Server Error",detail:"Hold on until we fix the issue")[m
+[32m+[m[41m                [m
+[32m+[m[32m            };[m
+[32m+[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/Controllers/UserController.cs b/Backend/WezProjectifier/Controllers/UserController.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b9ce5ab[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Controllers/UserController.cs[m
+[36m@@ -0,0 +1,116 @@[m
+[32m+[m[32m﻿using Microsoft.AspNetCore.Mvc;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Controllers[m
+[32m+[m[32m{[m
+[32m+[m[32m    [Route("api/[controller]")][m
+[32m+[m[32m    [ApiController][m
+[32m+[m[32m    public class UserController : ControllerBase[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly clsUserService _user;[m
+[32m+[m[32m        public UserController(clsUserService user)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _user = user;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m
+[32m+[m[32m        [HttpPost(Name = "create")][m
+[32m+[m[32m        [ProducesResponseType((int)StatusCodes.Status201Created)][m
+[32m+[m[32m        [ProducesResponseType((int)StatusCodes.Status400BadRequest)][m
+[32m+[m[32m        [ProducesResponseType((int)StatusCodes.Status409Conflict)][m
+[32m+[m[32m        public async Task<ActionResult> CreateUser([FromBody] CreateUserDTO userDTO)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (userDTO.Image == "string")[m
+[32m+[m[32m            {[m
+[32m+[m[32m                userDTO.Image = null;[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            var result = await _user.CreateUserAsync(userDTO.FirstName, userDTO.LastName,[m
+[32m+[m[32m                userDTO.Email, userDTO.PhoneNumber, userDTO.Username,[m
+[32m+[m[32m                userDTO.Password, userDTO.Address, userDTO.Image ?? null);[m
+[32m+[m
+[32m+[m[32m            return result.enResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok("User Was Create Successfully"),[m
+[32m+[m[32m                enOperationResult.AlreadyExist => Problem(statusCode: StatusCodes.Status409Conflict,[m
+[32m+[m[32m                title: "Duplicate Data", detail: result.Message),[m
+[32m+[m[32m                enOperationResult.InvalidData => Problem(statusCode: StatusCodes.Status400BadRequest,[m
+[32m+[m[32m                title: "Invalid Data !"),[m
+[32m+[m[32m                _ => Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Internal Server Error !")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("all")][m
+[32m+[m[32m        [ProducesResponseType((int)StatusCodes.Status200OK)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status500InternalServerError)][m
+[32m+[m[32m        public async Task<ActionResult> fetchAllUsers()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _user.GetAllUsersAsync();[m
+[32m+[m[32m            if (result.Count == 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Ok("No Users Found");[m
+[32m+[m[32m            }[m
+[32m+[m[32m            return Ok(result);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpGet("getById/{id::int}")][m
+[32m+[m[32m        [ProducesResponseType((int)StatusCodes.Status200OK)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status400BadRequest)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status404NotFound)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status500InternalServerError)][m
+[32m+[m[32m        public async Task<ActionResult> GetUserByIdAsync(int id)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _user.FindUserAsync(id);[m
+[32m+[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.InvalidData => Problem(statusCode: StatusCodes.Status400BadRequest,[m
+[32m+[m[32m                title: "Invalid Data", detail: "Please enter valid ID"),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem(statusCode: StatusCodes.Status404NotFound,[m
+[32m+[m[32m                title: "Not Found !", detail: $"User with The ID {id} was not found"),[m
+[32m+[m[32m                _ => Problem(statusCode: StatusCodes.Status500InternalServerError,[m
+[32m+[m[32m                title: "Internal Server Error", detail: "Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m[32m        [HttpDelete("delete/{id::int}")][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status200OK)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status400BadRequest)][m
+[32m+[m[32m        [ProducesResponseType(StatusCodes.Status404NotFound)][m
+[32m+[m[32m        public async Task<ActionResult> DeleteUserAsync(int id)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _user.DeleteUserAsync(id);[m
+[32m+[m[32m            return result switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok("Succesfuly Deleted The User !"),[m
+[32m+[m[32m                enOperationResult.InvalidData => Problem(statusCode: StatusCodes.Status400BadRequest,[m
+[32m+[m[32m                title: "Invalid ID", detail: "Please enter a valid id"),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem(statusCode: StatusCodes.Status404NotFound,[m
+[32m+[m[32m                title: "Not Found", detail: "User with this id doesn't exist"),[m
+[32m+[m[32m                _ => Problem(statusCode: StatusCodes.Status500InternalServerError,[m
+[32m+[m[32m                title: "Internal Server Error", detail: "Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [HttpPatch("update/{id::int}")][m
+[32m+[m[32m        [ProducesResponseType(200)][m
+[32m+[m[32m        [ProducesResponseType(400)][m
+[32m+[m[32m        [ProducesResponseType(404)][m
+[32m+[m[32m        public async Task<ActionResult<User>> UpdateUserAsync(int id, [FromBody] UpdateUserDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var result = await _user.UpdateUserAsync(id, dto);[m
+[32m+[m[32m            return result.OperationResult switch[m
+[32m+[m[32m            {[m
+[32m+[m[32m                enOperationResult.Success => Ok(result.Value),[m
+[32m+[m[32m                enOperationResult.NotFound => Problem(statusCode: StatusCodes.Status404NotFound,[m
+[32m+[m[32m                title: "Not Found", detail: $"User with the id {id} was not found"),[m
+[32m+[m[32m                enOperationResult.InvalidData => Problem(statusCode: StatusCodes.Status400BadRequest,[m
+[32m+[m[32m                title: "Invalid Data", detail: $"Invalid Data Provided"),[m
+[32m+[m[32m                _ => Problem(statusCode: 500, title: "Internal Server Error", detail: "Hold on until we fix the issue")[m
+[32m+[m[32m            };[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/Program.cs b/Backend/WezProjectifier/Program.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f2a389c[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Program.cs[m
+[36m@@ -0,0 +1,41 @@[m
+[32m+[m[32musing Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.Services;[m
+[32m+[m
+[32m+[m
+[32m+[m[32mvar builder = WebApplication.CreateBuilder(args);[m
+[32m+[m
+[32m+[m[32m// Add services to the container.[m
+[32m+[m
+[32m+[m[32mbuilder.Services.AddControllers();[m
+[32m+[m[32m// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi[m
+[32m+[m[32mbuilder.Services.AddOpenApi();[m
+[32m+[m[32mbuilder.Services.AddDbContext<WezDbContext>([m
+[32m+[m[32m    options =>[m
+[32m+[m[32m    options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"])[m
+[32m+[m[32m    );[m
+[32m+[m[32mbuilder.Services.AddScoped<clsUserService>();[m
+[32m+[m[32mbuilder.Services.AddScoped<clsProjectService>();[m
+[32m+[m[32mbuilder.Services.AddScoped<clsTaskService>();[m
+[32m+[m[32mbuilder.Services.AddScoped<clsMemberService>();[m
+[32m+[m
+[32m+[m
+[32m+[m[32mvar app = builder.Build();[m
+[32m+[m
+[32m+[m[32m// Configure the HTTP request pipeline.[m
+[32m+[m[32mif (app.Environment.IsDevelopment())[m
+[32m+[m[32m{[m
+[32m+[m[32m    app.MapOpenApi();[m
+[32m+[m[32m    app.UseSwaggerUI(options =>[m
+[32m+[m[32m    {[m
+[32m+[m[32m        options.SwaggerEndpoint("/openapi/v1.json", "API v1");[m
+[32m+[m[32m    });[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mapp.UseHttpsRedirection();[m
+[32m+[m
+[32m+[m[32mapp.UseAuthorization();[m
+[32m+[m
+[32m+[m[32mapp.MapControllers();[m
+[32m+[m
+[32m+[m[32mapp.Run();[m
+[1mdiff --git a/Backend/WezProjectifier/Properties/launchSettings.json b/Backend/WezProjectifier/Properties/launchSettings.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fb6e400[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/Properties/launchSettings.json[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32m﻿{[m
+[32m+[m[32m  "$schema": "https://json.schemastore.org/launchsettings.json",[m
+[32m+[m[32m  "profiles": {[m
+[32m+[m[32m    "http": {[m
+[32m+[m[32m      "commandName": "Project",[m
+[32m+[m[32m      "dotnetRunMessages": true,[m
+[32m+[m[32m      "launchBrowser": false,[m
+[32m+[m[32m      "applicationUrl": "http://localhost:5168",[m
+[32m+[m[32m      "environmentVariables": {[m
+[32m+[m[32m        "ASPNETCORE_ENVIRONMENT": "Development"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "https": {[m
+[32m+[m[32m      "commandName": "Project",[m
+[32m+[m[32m      "dotnetRunMessages": true,[m
+[32m+[m[32m      "launchBrowser": false,[m
+[32m+[m[32m      "applicationUrl": "https://localhost:7185;http://localhost:5168",[m
+[32m+[m[32m      "environmentVariables": {[m
+[32m+[m[32m        "ASPNETCORE_ENVIRONMENT": "Development"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifier/WezProjectifier.csproj b/Backend/WezProjectifier/WezProjectifier.csproj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8f82156[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/WezProjectifier.csproj[m
+[36m@@ -0,0 +1,28 @@[m
+[32m+[m[32m<Project Sdk="Microsoft.NET.Sdk.Web">[m
+[32m+[m
+[32m+[m[32m  <PropertyGroup>[m
+[32m+[m[32m    <TargetFramework>net10.0</TargetFramework>[m
+[32m+[m[32m    <Nullable>enable</Nullable>[m
+[32m+[m[32m    <ImplicitUsings>enable</ImplicitUsings>[m
+[32m+[m[32m  </PropertyGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">[m
+[32m+[m[32m      <PrivateAssets>all</PrivateAssets>[m
+[32m+[m[32m      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>[m
+[32m+[m[32m    </PackageReference>[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">[m
+[32m+[m[32m      <PrivateAssets>all</PrivateAssets>[m
+[32m+[m[32m      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>[m
+[32m+[m[32m    </PackageReference>[m
+[32m+[m[32m    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.3.0" />[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <ProjectReference Include="..\WezProjectifierBLL\WezProjectifierBLL.csproj" />[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m</Project>[m
+[1mdiff --git a/Backend/WezProjectifier/WezProjectifier.http b/Backend/WezProjectifier/WezProjectifier.http[m
+[1mnew file mode 100644[m
+[1mindex 0000000..175b334[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/WezProjectifier.http[m
+[36m@@ -0,0 +1,6 @@[m
+[32m+[m[32m@WezProjectifier_HostAddress = http://localhost:5168[m
+[32m+[m
+[32m+[m[32mGET {{WezProjectifier_HostAddress}}/weatherforecast/[m
+[32m+[m[32mAccept: application/json[m
+[32m+[m
+[32m+[m[32m###[m
+[1mdiff --git a/Backend/WezProjectifier/WezProjectifier.slnx b/Backend/WezProjectifier/WezProjectifier.slnx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b414a70[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/WezProjectifier.slnx[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32m<Solution>[m
+[32m+[m[32m  <Project Path="../WezProjectifierBLL/WezProjectifierBLL.csproj" />[m
+[32m+[m[32m  <Project Path="../WezProjectifierDAL/WezProjectifierDAL.csproj" />[m
+[32m+[m[32m  <Project Path="WezProjectifier.csproj" />[m
+[32m+[m[32m</Solution>[m
+[1mdiff --git a/Backend/WezProjectifier/appsettings.json b/Backend/WezProjectifier/appsettings.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..58a002c[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifier/appsettings.json[m
+[36m@@ -0,0 +1,12 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m  "Logging": {[m
+[32m+[m[32m    "LogLevel": {[m
+[32m+[m[32m        "Default": "Information",[m
+[32m+[m[32m        "Microsoft.AspNetCore": "Warning"[m
+[32m+[m[32m    }[m
+[32m+[m[32m  },[m
+[32m+[m[32m  "AllowedHosts": "*",[m
+[32m+[m[32m    "ConnectionStrings": {[m
+[32m+[m[32m        "DefaultConnection": "Server=.;Database=WezDB;Trusted_Connection=True;TrustServerCertificate=True;"[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Login/CreateUserResponseDTO.cs b/Backend/WezProjectifierBLL/DTOs/Login/CreateUserResponseDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0a35e63[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Login/CreateUserResponseDTO.cs[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32m﻿using WezProjectifierBLL;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class CreateUserResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public CreateUserDTO? user;[m
+[32m+[m[32m        public enOperationResult operationResult;[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Members/AddMemberResponseDTO.cs b/Backend/WezProjectifierBLL/DTOs/Members/AddMemberResponseDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..cdedf8a[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Members/AddMemberResponseDTO.cs[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Members[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class AddMemberResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int MemberId { get; set; }[m
+[32m+[m[32m        public UserSummaryDTO User { get; set; } = null!;[m
+[32m+[m[32m        public ProjectSummaryDTO Project { get; set; } = null!;[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/AddNewProjectDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/AddNewProjectDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0cc7cea[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/AddNewProjectDTO.cs[m
+[36m@@ -0,0 +1,28 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.ComponentModel.DataAnnotations;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class AddNewProjectRequestDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        [Required][m
+[32m+[m[32m        public string ProjectName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public int CreatedBy { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public class AddNewProjectResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        [Required][m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m        public string ProjectName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public int CreatedBy { get; set; }[m
+[32m+[m[32m        public UserSummaryDTO? User { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/GetProjectInfoDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/GetProjectInfoDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..72c796a[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/GetProjectInfoDTO.cs[m
+[36m@@ -0,0 +1,20 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m[32musing System.Linq;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class GetProjectInfoDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string ProjectName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public int? CreatedBy { get; set; }[m
+[32m+[m[32m        public UserSummaryDTO? OwnerUser { get; set; }[m
+[32m+[m[32m        public ICollection<MemberDTO> Member { get; set; } = new List<MemberDTO>();[m
+[32m+[m[32m        public ICollection<ProjectTaskDTO> Tasks { get; set; } = new List<ProjectTaskDTO>();[m[41m [m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/MemberDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/MemberDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7b930c2[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/MemberDTO.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class MemberDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int Id { get; set; }[m
+[32m+[m[32m        public int ProjectId { get; set; }[m
+[32m+[m[32m        public int UserId { get; set; }[m
+[32m+[m[32m        public string Role { get; set; } = string.Empty;[m
+[32m+[m[32m        public UserSummaryDTO? User { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/ProjectSummaryDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/ProjectSummaryDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..02cca41[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/ProjectSummaryDTO.cs[m
+[36m@@ -0,0 +1,18 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.ComponentModel.DataAnnotations;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class ProjectSummaryDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        [Required][m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m        [Required][m
+[32m+[m[32m        [MaxLength(50)][m
+[32m+[m[32m        public string ProjectName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/ProjectTaskDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/ProjectTaskDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e6622bf[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/ProjectTaskDTO.cs[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class ProjectTaskDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int Id { get; set; }[m
+[32m+[m[32m        public string Name { get; set; } = string.Empty;[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; } = string.Empty;[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m        public int ProjectId { get; set; }[m
+[32m+[m[32m        public IList<int> AssignedMemberIds { get; set; } = new List<int>();[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Projects/UpdateProjectRequestDTO.cs b/Backend/WezProjectifierBLL/DTOs/Projects/UpdateProjectRequestDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..5a162f2[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Projects/UpdateProjectRequestDTO.cs[m
+[36m@@ -0,0 +1,14 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Projects[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class UpdateProjectRequestDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string ProjectName { get; set; } = null!;[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskRequestDTO.cs b/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskRequestDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f87551f[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskRequestDTO.cs[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Tasks[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class AddTaskRequestDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public string TaskName { get; set; } = null!;[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; }[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskResponseDTO.cs b/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskResponseDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0840496[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Tasks/AddTaskResponseDTO.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Tasks[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class AddTaskResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string TaskName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; }[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Tasks/TaskDTO.cs b/Backend/WezProjectifierBLL/DTOs/Tasks/TaskDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0cbb99b[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Tasks/TaskDTO.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Tasks[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class TaskDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string TaskName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; }[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskRequestDTO.cs b/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskRequestDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c51a122[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskRequestDTO.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Tasks[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class UpdateTaskRequestDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string TaskName { get; set; } = null!;[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; } = null!;[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskResponseDTO.cs b/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskResponseDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a729073[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/Tasks/UpdateTaskResponseDTO.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.Tasks[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class UpdateTaskResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string TaskName { get; set; }[m
+[32m+[m[32m        public string? Description { get; set; }[m
+[32m+[m[32m        public string Priority { get; set; }[m
+[32m+[m[32m        public string? Status { get; set; }[m
+[32m+[m[32m        public int ProjectID { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/User/CreateUserDTOcs.cs b/Backend/WezProjectifierBLL/DTOs/User/CreateUserDTOcs.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3b223c4[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/User/CreateUserDTOcs.cs[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32m﻿namespace WezProjectifierBLL.DTOs[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class CreateUserDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int ID { get; set; }[m
+[32m+[m[32m        public string FirstName { get; set; }[m
+[32m+[m[32m        public string LastName { get; set; }[m
+[32m+[m[32m        public string Email { get; set; }[m
+[32m+[m[32m        public string PhoneNumber { get; set; }[m
+[32m+[m[32m        public string Username { get; set; }[m
+[32m+[m[32m        public string Password { get; set; }[m
+[32m+[m[32m        public string Address { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/User/UpdateUserDTO.cs b/Backend/WezProjectifierBLL/DTOs/User/UpdateUserDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..91774b0[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/User/UpdateUserDTO.cs[m
+[36m@@ -0,0 +1,12 @@[m
+[32m+[m[32m﻿namespace WezProjectifierBLL.DTOs[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class UpdateUserDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public string? Firstname { get; set; }[m
+[32m+[m[32m        public string? Lastname { get; set; }[m
+[32m+[m[32m        public string? Email { get; set; }[m
+[32m+[m[32m        public string? Phonenumber { get; set; }[m
+[32m+[m[32m        public string? Address { get; set; }[m
+[32m+[m[32m        public string? Image { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/DTOs/User/UserSummaryDTO.cs b/Backend/WezProjectifierBLL/DTOs/User/UserSummaryDTO.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bf8c863[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/DTOs/User/UserSummaryDTO.cs[m
+[36m@@ -0,0 +1,13 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.DTOs.User[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class UserSummaryDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public int Id { get; set; }[m
+[32m+[m[32m        public string UserName { get; set; }[m
+[32m+[m[32m        public string Email { get; set; }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Enums/enOperationResult.cs b/Backend/WezProjectifierBLL/Enums/enOperationResult.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7f83dd3[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Enums/enOperationResult.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿namespace WezProjectifierBLL;[m
+[32m+[m
+[32m+[m[32mpublic enum enOperationResult[m
+[32m+[m[32m{[m
+[32m+[m[32m    Success,[m
+[32m+[m[32m    AlreadyExist,[m
+[32m+[m[32m    InvalidData,[m
+[32m+[m[32m    InvalidCredentials,[m
+[32m+[m[32m    AccountInactive,[m
+[32m+[m[32m    AccountLocked,[m
+[32m+[m[32m    Failed,[m
+[32m+[m[32m    NotFound,[m
+[32m+[m[32m    NotFound2,[m
+[32m+[m[32m    InvalidSkillLevel,[m
+[32m+[m[32m    Conflict[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Models/OperationMessage.cs b/Backend/WezProjectifierBLL/Models/OperationMessage.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4eaf1d9[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Models/OperationMessage.cs[m
+[36m@@ -0,0 +1,13 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Models[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class OperationMessage[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public string? Message { get; set; }[m
+[32m+[m[32m        public enOperationResult enResult { get; set; }[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Models/OperationResult.cs b/Backend/WezProjectifierBLL/Models/OperationResult.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4759f4e[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Models/OperationResult.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.ClientModel.Primitives;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Models[m
+[32m+[m[32m{[m
+[32m+[m[32m    public sealed record Result<T>(T? Value, enOperationResult OperationResult)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        public bool IsSuccess => OperationResult == enOperationResult.Success;[m
+[32m+[m
+[32m+[m[32m        public static Result<T> Success(T value) => new(value, enOperationResult.Success);[m
+[32m+[m[32m        public static Result<T> Failure(enOperationResult op) => new(default, op);[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Services/clsAssignedTasksService.cs b/Backend/WezProjectifierBLL/Services/clsAssignedTasksService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4b3a846[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Services/clsAssignedTasksService.cs[m
+[36m@@ -0,0 +1,142 @@[m
+[32m+[m[32m﻿using Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing Microsoft.Extensions.Logging;[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Tasks;[m
+[32m+[m[32musing WezProjectifierBLL.Models;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Services[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class clsAssignedTasksService[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly WezDbContext _context;[m
+[32m+[m[32m        private readonly ILogger<clsAssignedTasksService> _logger;[m
+[32m+[m
+[32m+[m[32m        public clsAssignedTasksService(WezDbContext context, ILogger<clsAssignedTasksService> logger)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _context = context;[m
+[32m+[m[32m            _logger = logger;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<bool>> AssignTaskToUserAsync(int taskId, int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (taskId <= 0 || projectId <= 0 || userId <= 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m[32m                var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);[m
+[32m+[m[32m                var task = await _context.Tasks.AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId && t.ProjectId == projectId);[m
+[32m+[m[32m                if (user == null || project == null || task == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var member = await _context.Members.AsNoTracking().FirstOrDefaultAsync(m => m.UserId == userId && m.ProjectId == projectId);[m
+[32m+[m[32m                if (member == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound2);[m
+[32m+[m
+[32m+[m[32m                AssignedTask newAssignedTask = new AssignedTask[m[41m [m
+[32m+[m[32m                {[m
+[32m+[m[32m                    MemberId = member.Id,[m
+[32m+[m[32m                    TaskId = task.Id[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                await _context.AssignedTasks.AddAsync(newAssignedTask);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<bool>.Success(true);[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<List<TaskDTO>>> GetAllAssignedTasksAsync(int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (projectId <= 0 || userId <= 0)[m
+[32m+[m[32m                return Result<List<TaskDTO>>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            try[m[41m [m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m[32m                var user = await _context.Users.AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(u => u.Id == userId);[m
+[32m+[m
+[32m+[m[32m                if (user == null || project == null)[m
+[32m+[m[32m                    return Result<List<TaskDTO>>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var member = await _context.Members.FirstOrDefaultAsync(m => m.ProjectId == projectId && m.UserId == userId);[m
+[32m+[m[32m                if (member == null)[m
+[32m+[m[32m                    return Result<List<TaskDTO>>.Failure(enOperationResult.NotFound2);[m
+[32m+[m
+[32m+[m[32m                List<TaskDTO> response = await _context.AssignedTasks.AsNoTracking().Join(_context.Members,[m
+[32m+[m[32m                    at => at.MemberId,[m
+[32m+[m[32m                    m => m.Id,[m
+[32m+[m[32m                    (at, m) => new[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        userid = m.UserId,[m
+[32m+[m[32m                        projectid = m.ProjectId,[m
+[32m+[m[32m                        taskid = at.TaskId[m
+[32m+[m[32m                    })[m
+[32m+[m[32m                    .Where(t => t.userid == userId && t.projectid == projectId)[m
+[32m+[m[32m                    .Join(_context.Tasks,[m
+[32m+[m[32m                    at => at.taskid,[m
+[32m+[m[32m                    t => t.Id,[m
+[32m+[m[32m                    (at, t) => new TaskDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        ID = t.Id,[m
+[32m+[m[32m                        TaskName = t.Name,[m
+[32m+[m[32m                        Description = t.Description,[m
+[32m+[m[32m                        Priority = t.Priority,[m
+[32m+[m[32m                        Status = t.Status[m
+[32m+[m[32m                    }).ToListAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<List<TaskDTO>>.Success(response);[m
+[32m+[m
+[32m+[m[32m            } catch (Exception ex)[m[41m [m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<List<TaskDTO>>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<bool>> UnassignTaskFromUserAsync(int taskId, int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (taskId <= 0 || projectId <= 0 || userId <= 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m[32m                var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);[m
+[32m+[m[32m                var task = await _context.Tasks.AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId && t.ProjectId == projectId);[m
+[32m+[m[32m                if (user == null || project == null || task == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var member = await _context.Members.AsNoTracking().FirstOrDefaultAsync(m => m.UserId == userId && m.ProjectId == projectId);[m
+[32m+[m[32m                if (member == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound2);[m
+[32m+[m
+[32m+[m[32m                var assignedTask = await _context.AssignedTasks[m
+[32m+[m[32m                    .FirstOrDefaultAsync(at => at.MemberId == member.Id && at.TaskId == taskId);[m
+[32m+[m[32m                if (assignedTask == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound2);[m
+[32m+[m
+[32m+[m[32m                _context.AssignedTasks.Remove(assignedTask);[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m[32m                return Result<bool>.Success(true);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Services/clsMemberService.cs b/Backend/WezProjectifierBLL/Services/clsMemberService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4d82898[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Services/clsMemberService.cs[m
+[36m@@ -0,0 +1,151 @@[m
+[32m+[m[32m﻿using Microsoft.Data.SqlClient;[m
+[32m+[m[32musing Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing Microsoft.Extensions.Logging;[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Numerics;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Members;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.User;[m
+[32m+[m[32musing WezProjectifierBLL.Models;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Services[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class clsMemberService[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private static string[] _roles = { "Owner", "User" };[m
+[32m+[m
+[32m+[m[32m        private readonly WezDbContext _context;[m
+[32m+[m[32m        private readonly ILogger<clsMemberService> _logger;[m
+[32m+[m[32m        public clsMemberService(WezDbContext context, ILogger<clsMemberService> logger)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _context = context;[m
+[32m+[m[32m            _logger = logger;[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<Result<AddMemberResponseDTO>> AddUserToProject(int projectId,int userId,string Role)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (projectId <= 0 || userId <= 0 || !_roles.Contains(Role,StringComparer.OrdinalIgnoreCase))[m
+[32m+[m[32m                return Result<AddMemberResponseDTO>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.FindAsync(projectId);[m
+[32m+[m[32m                var user = await _context.Users.FindAsync(userId);[m
+[32m+[m[32m                if (project == null || user == null)[m
+[32m+[m[32m                    return Result<AddMemberResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var member = new Member[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    UserId = userId,[m
+[32m+[m[32m                    ProjectId = projectId,[m
+[32m+[m[32m                    Role = Role[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                await _context.AddAsync(member);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                AddMemberResponseDTO response = new AddMemberResponseDTO {[m[41m [m
+[32m+[m[32m                    MemberId = member.Id,[m
+[32m+[m[32m                    Project = new ProjectSummaryDTO[m[41m [m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        ProjectID = project.Id,[m
+[32m+[m[32m                        ProjectName = project.Name,[m
+[32m+[m[32m                        Description = project.Description,[m
+[32m+[m[32m                        Image = project.Image[m
+[32m+[m[32m                    },[m
+[32m+[m[32m                    User = new DTOs.User.UserSummaryDTO[m[41m [m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        Id = user.Id,[m
+[32m+[m[32m                        UserName = user.Username,[m
+[32m+[m[32m                        Email = user.Email[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                return Result<AddMemberResponseDTO>.Success(response);[m
+[32m+[m
+[32m+[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (DbUpdateException ex)[m
+[32m+[m[32m                when (ex.InnerException is SqlException sqlEx[m
+[32m+[m[32m              && (sqlEx.Number == 2601 || sqlEx.Number == 2627))[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical([m
+[32m+[m[32m                    ex,[m
+[32m+[m[32m                    "A unique constraint violation occurred while saving a Member."[m
+[32m+[m[32m                );[m
+[32m+[m[32m                return Result<AddMemberResponseDTO>.Failure(enOperationResult.AlreadyExist);[m
+[32m+[m
+[32m+[m[32m                throw;[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<AddMemberResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<Result<List<UserSummaryDTO>>> GetAllMembers(int projectId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (projectId <= 0)[m
+[32m+[m[32m                return Result<List<UserSummaryDTO>>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                    return Result<List<UserSummaryDTO>>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var members = await _context.Members.AsNoTracking().Where(m => m.ProjectId == projectId)[m
+[32m+[m[32m                    .Join(_context.Users,[m
+[32m+[m[32m                    m => m.UserId,[m
+[32m+[m[32m                    u => u.Id,[m
+[32m+[m[32m                    (m, u) => new UserSummaryDTO {[m[41m [m
+[32m+[m[32m                        Id = u.Id,[m
+[32m+[m[32m                        UserName = u.Username,[m
+[32m+[m[32m                        Email = u.Email })[m
+[32m+[m[32m                    .ToListAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<List<UserSummaryDTO>>.Success(members);[m
+[32m+[m
+[32m+[m
+[32m+[m[32m            }[m
+[32m+[m[41m            [m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<List<UserSummaryDTO>>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<bool>> RemoveUserFromProjectAsync(int projectId, int userId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (projectId <= 0 || userId <= 0)[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m[32m                var user = await _context.Users.AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(u => u.Id == userId);[m
+[32m+[m
+[32m+[m[32m                if (user == null || project == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                var member = await _context.Members.FirstOrDefaultAsync(m => m.ProjectId == projectId && m.UserId == userId);[m
+[32m+[m[32m                if (member == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                _context.Remove(member);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<bool>.Success(true);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Services/clsProjectService.cs b/Backend/WezProjectifierBLL/Services/clsProjectService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d246ed3[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Services/clsProjectService.cs[m
+[36m@@ -0,0 +1,215 @@[m
+[32m+[m[32m﻿using Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing Microsoft.Extensions.Logging;[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Projects;[m
+[32m+[m[32musing WezProjectifierBLL.Models;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Services[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class clsProjectService[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private readonly ILogger<clsProjectService> _logger;[m
+[32m+[m[32m        private readonly WezDbContext _context;[m
+[32m+[m[32m        public clsProjectService(WezDbContext context,ILogger<clsProjectService> logger)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _logger = logger;[m
+[32m+[m[32m            _context = context;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<AddNewProjectResponseDTO>> AddNewProjectAsync(AddNewProjectRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (dto.Image == "string" || string.IsNullOrEmpty(dto.Image))[m
+[32m+[m[32m                dto.Image = null;[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                if (string.IsNullOrEmpty(dto.ProjectName))[m
+[32m+[m[32m                    return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m                var owner = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == dto.CreatedBy);[m
+[32m+[m[32m                if(owner == null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m[32m                }[m
+[32m+[m[41m                [m
+[32m+[m[32m                Project pr = new Project[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    Name = dto.ProjectName,[m
+[32m+[m[32m                    Description = dto.Description,[m
+[32m+[m[32m                    CreatedBy = dto.CreatedBy,[m
+[32m+[m[32m                    Image = dto.Image[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[41m                [m
+[32m+[m
+[32m+[m[32m                await _context.Projects.AddAsync(pr);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                var newAddedProject = await _context.Projects[m
+[32m+[m[32m    .AsNoTracking()[m
+[32m+[m[32m    .Where(p => p.Id == pr.Id)[m
+[32m+[m[32m    .Select(p => new AddNewProjectResponseDTO[m
+[32m+[m[32m    {[m
+[32m+[m[32m        ProjectID = p.Id,[m
+[32m+[m[32m        ProjectName = p.Name,[m
+[32m+[m[32m        Description = p.Description,[m
+[32m+[m[32m        Image = p.Image,[m
+[32m+[m[32m        CreatedBy = p.CreatedBy,[m
+[32m+[m[32m        User = new DTOs.User.UserSummaryDTO[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Id = p.CreatedByNavigation.Id,[m
+[32m+[m[32m            UserName = p.CreatedByNavigation.Username,[m
+[32m+[m[32m            Email = p.CreatedByNavigation.Email[m
+[32m+[m[32m        }[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .FirstOrDefaultAsync();[m
+[32m+[m
+[32m+[m[32m                if (newAddedProject == null)[m
+[32m+[m[32m                    throw new Exception("Project was added, but there was a problem in fetching it from the database");[m
+[32m+[m
+[32m+[m[32m               return Result<AddNewProjectResponseDTO>.Success(newAddedProject);[m
+[32m+[m[41m                    [m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<bool>> DeleteProjecyAsync(int id)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m                _context.Projects.Remove(project);[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m[32m                return Result<bool>.Success(true);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<List<ProjectSummaryDTO>> GetAllProjects()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var projects = await _context.Projects[m
+[32m+[m[32m                .Select(p => new ProjectSummaryDTO[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    ProjectID = p.Id,[m
+[32m+[m[32m                    ProjectName = p.Name,[m
+[32m+[m[32m                    Description = p.Description,[m
+[32m+[m[32m                    Image = p.Image[m
+[32m+[m[32m                }).AsNoTracking().ToListAsync();[m
+[32m+[m[32m            return projects;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<GetProjectInfoDTO>> GetProjectInfoAsync(int ProjectID)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            try{[m
+[32m+[m[32m                var project = await _context.Projects[m
+[32m+[m[32m                .AsNoTracking()[m
+[32m+[m[32m                .AsSplitQuery()[m
+[32m+[m[32m                .Select(p => new GetProjectInfoDTO[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    ProjectName = p.Name,[m
+[32m+[m[32m                    Description = p.Description,[m
+[32m+[m[32m                    ID = p.Id,[m
+[32m+[m[32m                    Image = p.Image,[m
+[32m+[m[32m                    CreatedBy = p.CreatedBy,[m
+[32m+[m[32m                    Member = p.Members.Select(m => new MemberDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        Id = m.Id,[m
+[32m+[m[32m                        ProjectId = m.ProjectId,[m
+[32m+[m[32m                        UserId = m.UserId,[m
+[32m+[m[32m                        Role = m.Role,[m
+[32m+[m[32m                        User = new DTOs.User.UserSummaryDTO[m
+[32m+[m[32m                        {[m
+[32m+[m[32m                            Id = m.User.Id,[m
+[32m+[m[32m                            UserName = m.User.Username,[m
+[32m+[m[32m                            Email = m.User.Email[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    }).ToList(),[m
+[32m+[m[32m                    Tasks = p.Tasks.Select(t => new ProjectTaskDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        Id = t.Id,[m
+[32m+[m[32m                        Name = t.Name,[m
+[32m+[m[32m                        Description = t.Description,[m
+[32m+[m[32m                        Priority = t.Priority,[m
+[32m+[m[32m                        Status = t.Status,[m
+[32m+[m[32m                        ProjectId = t.ProjectId,[m
+[32m+[m[32m                        AssignedMemberIds = t.AssignedTasks.Select(at => at.MemberId).ToList()[m
+[32m+[m[32m                    }).ToList(),[m
+[32m+[m[32m                    OwnerUser = new DTOs.User.UserSummaryDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        Email = p.CreatedByNavigation.Email,[m
+[32m+[m[32m                        UserName = p.CreatedByNavigation.Username,[m
+[32m+[m[32m                        Id = p.CreatedByNavigation.Id[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }).FirstOrDefaultAsync(p => p.ID == ProjectID);[m
+[32m+[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return Result<GetProjectInfoDTO>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m                }[m
+[32m+[m[32m                return Result<GetProjectInfoDTO>.Success(project);[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return Result<GetProjectInfoDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<AddNewProjectResponseDTO>> UpdateProjectAsync(UpdateProjectRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.FindAsync(dto.ID);[m
+[32m+[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                    return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.ProjectName))[m
+[32m+[m[32m                    project.Name = dto.ProjectName;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Description))[m
+[32m+[m[32m                    project.Description = dto.Description;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Image))[m
+[32m+[m[32m                    project.Image = dto.Image;[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                var updatedProject = await _context.Projects[m
+[32m+[m[32m                    .Select(p => new AddNewProjectResponseDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        ProjectName = p.Name,[m
+[32m+[m[32m                        Description = p.Description,[m
+[32m+[m[32m                        ProjectID = p.Id,[m
+[32m+[m[32m                        CreatedBy = p.CreatedBy,[m
+[32m+[m[32m                        User = new DTOs.User.UserSummaryDTO[m
+[32m+[m[32m                        {[m
+[32m+[m[32m                            Id = p.CreatedByNavigation.Id,[m
+[32m+[m[32m                            Email = p.CreatedByNavigation.Email,[m
+[32m+[m[32m                            UserName = p.CreatedByNavigation.Username[m
+[32m+[m[32m                        },[m
+[32m+[m[32m                        Image = p.Image[m
+[32m+[m[32m                    }).FirstOrDefaultAsync(p => p.ProjectID == dto.ID);[m
+[32m+[m
+[32m+[m[32m                if (updatedProject == null)[m
+[32m+[m[32m                    return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m
+[32m+[m[32m                return Result<AddNewProjectResponseDTO>.Success(updatedProject);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return Result<AddNewProjectResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Services/clsTaskService.cs b/Backend/WezProjectifierBLL/Services/clsTaskService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..54cfb65[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Services/clsTaskService.cs[m
+[36m@@ -0,0 +1,168 @@[m
+[32m+[m[32m﻿using Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing Microsoft.Extensions.Logging;[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs.Tasks;[m
+[32m+[m[32musing WezProjectifierBLL.Models;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Services[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class clsTaskService[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private static string[] Priority = { "LOW", "MEDIUM", "HIGH" };[m
+[32m+[m[32m        private static string[] Status = { null, "TODO", "INPROGRESS", "DONE" };[m
+[32m+[m[32m        private readonly WezDbContext _context;[m
+[32m+[m[32m        private readonly ILogger<clsTaskService> _logger;[m
+[32m+[m[32m        public clsTaskService(WezDbContext context,ILogger<clsTaskService> logger)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            _context = context;[m
+[32m+[m[32m            _logger = logger;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<List<TaskDTO>>> GetAllTasksAsync(int projectId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects[m
+[32m+[m[32m                    .AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(p => p.Id == projectId);[m
+[32m+[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                    return Result<List<TaskDTO>>.Failure(enOperationResult.NotFound);[m
+[32m+[m[41m                [m
+[32m+[m[32m                var tasks = await _context.Tasks[m
+[32m+[m[32m                    .Where(t => t.ProjectId == projectId)[m
+[32m+[m[32m                    .AsNoTracking()[m
+[32m+[m[32m                    .Select(t => new TaskDTO[m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        ID = t.Id,[m
+[32m+[m[32m                        TaskName = t.Name,[m
+[32m+[m[32m                        Description = t.Description,[m
+[32m+[m[32m                        Priority = t.Priority,[m
+[32m+[m[32m                        Status = t.Status[m
+[32m+[m[32m                    }).ToListAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<List<TaskDTO>>.Success(tasks);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical( DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<List<TaskDTO>>.Failure(enOperationResult.Failed);[m
+[32m+[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<Result<AddTaskResponseDTO>> CreateAddTaskToProjectAsync(AddTaskRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                if (string.IsNullOrEmpty(dto.TaskName) || dto.ProjectID <= 0)[m
+[32m+[m[32m                    return Result<AddTaskResponseDTO>.Failure(enOperationResult.InvalidData);[m
+[32m+[m
+[32m+[m
+[32m+[m[32m                var project = await _context.Projects.FindAsync(dto.ProjectID);[m
+[32m+[m[32m                if(project == null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return Result<AddTaskResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                var task = new ProjectTask[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    Name = dto.TaskName,[m
+[32m+[m[32m                    Description = dto.Description,[m
+[32m+[m[32m                    Priority = dto.Priority,[m
+[32m+[m[32m                    Status = dto.Status,[m
+[32m+[m[32m                    ProjectId = dto.ProjectID[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                await _context.AddAsync(task);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                var response = new AddTaskResponseDTO[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    ID = task.Id,[m
+[32m+[m[32m                    TaskName = task.Name,[m
+[32m+[m[32m                    Description = task.Description,[m
+[32m+[m[32m                    Priority = task.Priority,[m
+[32m+[m[32m                    Status = task.Status,[m
+[32m+[m[32m                    ProjectID = task.ProjectId[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                return Result<AddTaskResponseDTO>.Success(response);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<AddTaskResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<UpdateTaskResponseDTO>> UpdateTaskAsync(UpdateTaskRequestDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (string.IsNullOrWhiteSpace(dto.TaskName) || dto.ProjectID <= 0 ||[m
+[32m+[m[32m               !Priority.Contains(dto.Priority,StringComparer.OrdinalIgnoreCase) || !Status.Contains(dto.Status, StringComparer.OrdinalIgnoreCase) )[m
+[32m+[m[32m                return Result<UpdateTaskResponseDTO>.Failure(enOperationResult.InvalidData);[m
+[32m+[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == dto.ProjectID);[m
+[32m+[m[32m                if (project == null)[m
+[32m+[m[32m                    return Result<UpdateTaskResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m[32m                var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == dto.ID);[m
+[32m+[m[32m                if (task == null)[m
+[32m+[m[32m                    return Result<UpdateTaskResponseDTO>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                task.Name = dto.TaskName;[m
+[32m+[m[32m                task.Description = dto.Description;[m
+[32m+[m[32m                task.Priority = dto.Priority;[m
+[32m+[m[32m                task.Status = dto.Status;[m
+[32m+[m[32m                task.ProjectId = dto.ProjectID;[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                UpdateTaskResponseDTO response = new UpdateTaskResponseDTO[m[41m [m
+[32m+[m[32m                {[m
+[32m+[m[32m                    ID = task.Id,[m
+[32m+[m[32m                    TaskName = task.Name,[m
+[32m+[m[32m                    Description = task.Description,[m
+[32m+[m[32m                    Priority = task.Priority,[m
+[32m+[m[32m                    Status = task.Status,[m
+[32m+[m[32m                    ProjectID = task.ProjectId[m
+[32m+[m[32m                };[m
+[32m+[m
+[32m+[m[32m                return Result<UpdateTaskResponseDTO>.Success(response);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<UpdateTaskResponseDTO>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        public async Task<Result<bool>> DeleteTaskFromProjectAsync(int projectId, int taskId)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (projectId <= 0 || taskId <= 0)[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var project = await _context.Projects.FindAsync(projectId);[m
+[32m+[m[32m                var task = await _context.Tasks.FindAsync(taskId);[m
+[32m+[m[32m                if (task == null || project == null)[m
+[32m+[m[32m                    return Result<bool>.Failure(enOperationResult.NotFound);[m
+[32m+[m
+[32m+[m[32m                _context.Remove(task);[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[32m                return Result<bool>.Success(true);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(DateTime.Now + " - " + ex.Message);[m
+[32m+[m[32m                return Result<bool>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/Services/clsUserService.cs b/Backend/WezProjectifierBLL/Services/clsUserService.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e633eb2[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/Services/clsUserService.cs[m
+[36m@@ -0,0 +1,199 @@[m
+[32m+[m[32m﻿using BCrypt.Net;[m
+[32m+[m[32musing Microsoft.Data.SqlClient;[m
+[32m+[m[32musing Microsoft.EntityFrameworkCore;[m
+[32m+[m[32musing Microsoft.Extensions.Logging;[m
+[32m+[m[32musing System;[m
+[32m+[m[32musing System.ClientModel.Primitives;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Globalization;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing WezProjectifier.Models;[m
+[32m+[m[32musing WezProjectifierBLL.Models;[m
+[32m+[m[32musing WezProjectifierBLL.DTOs;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifierBLL.Services[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class clsUserService[m
+[32m+[m[32m    {[m
+[32m+[m[41m        [m
+[32m+[m[32m        private string HashPassword(string plaintextPassword)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            // A workFactor of 12 is recommended by OWASP to balance speed and security[m
+[32m+[m[32m            return BCrypt.Net.BCrypt.HashPassword(plaintextPassword, workFactor: 12);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        private readonly ILogger<clsUserService> _logger;[m
+[32m+[m[32m        private readonly WezDbContext _context;[m
+[32m+[m[32m        public clsUserService(WezDbContext context, ILogger<clsUserService> logger)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            this._context = context;[m
+[32m+[m[32m            this._logger = logger;[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<OperationMessage> CreateUserAsync(string firstName, string lastName, string email, string phoneNumber,[m
+[32m+[m[32m            string username, string password, string address, string? image = null)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (String.IsNullOrEmpty(image))[m
+[32m+[m[32m                image = null;[m
+[32m+[m[32m            User newUser = new User[m
+[32m+[m[32m            {[m
+[32m+[m[32m                Firstname = firstName,[m
+[32m+[m[32m                Lastname = lastName,[m
+[32m+[m[32m                Email = email,[m
+[32m+[m[32m                Phonenumber = phoneNumber,[m
+[32m+[m[32m                Username = username,[m
+[32m+[m[32m                Password = HashPassword(password),[m
+[32m+[m[32m                Address = address,[m
+[32m+[m[32m                Image = image[m
+[32m+[m[32m            };[m
+[32m+[m[32m            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);[m
+[32m+[m[32m            if(user != null)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return new OperationMessage[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    enResult = enOperationResult.AlreadyExist,[m
+[32m+[m[32m                    Message = "User with this email already exists !"[m
+[32m+[m[41m                [m
+[32m+[m[32m                };[m
+[32m+[m[32m            }[m
+[32m+[m[32m            user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);[m
+[32m+[m[32m            if(user != null)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return new OperationMessage[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    enResult = enOperationResult.AlreadyExist,[m
+[32m+[m[32m                    Message = "User with this username already exists !"[m
+[32m+[m[32m                };[m
+[32m+[m[32m            }[m
+[32m+[m[32m            user = await _context.Users.FirstOrDefaultAsync(u => u.Phonenumber == phoneNumber);[m
+[32m+[m[32m            if(user != null)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return new OperationMessage { enResult = enOperationResult.AlreadyExist,[m
+[32m+[m[32m                Message = "User with this Phonenumber already exists !"};[m
+[32m+[m[32m            }[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                await _context.AddAsync(newUser);[m
+[32m+[m
+[32m+[m[32m                int affectedRows = await _context.SaveChangesAsync();[m
+[32m+[m[32m                _logger.LogInformation($"New user {newUser.Id} has been created at {DateTime.Now}");[m
+[32m+[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (DbUpdateException ex) when ([m
+[32m+[m[32m            ex.InnerException is SqlException sqlEx &&[m
+[32m+[m[32m            (sqlEx.Number == 2601 || sqlEx.Number == 2627))[m
+[32m+[m[32m            {[m
+[32m+[m
+[32m+[m[32m                _logger.LogWarning(ex.InnerException.Message);[m
+[32m+[m[32m                return new OperationMessage { enResult = enOperationResult.AlreadyExist };[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return new OperationMessage { enResult = enOperationResult.Failed };[m
+[32m+[m[32m            }[m
+[32m+[m[32m            return new OperationMessage { enResult = enOperationResult.Success };[m
+[32m+[m[32m        }[m[41m [m
+[32m+[m[32m        public async Task<List<User>> GetAllUsersAsync()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var list = await _context.Users.AsNoTracking().ToListAsync();[m
+[32m+[m[32m            return list;[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<Result<User>> FindUserAsync(int ID)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            User? user;[m
+[32m+[m[32m            if (ID <= 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Result<User>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                user = await _context.Users[m
+[32m+[m[32m                    .AsNoTracking()[m
+[32m+[m[32m                    .FirstOrDefaultAsync(u => u.Id == ID);[m
+[32m+[m[32m                if (user == null)[m
+[32m+[m[32m                    return Result<User>.Failure(enOperationResult.NotFound);[m
+[32m+[m[32m                return Result<User>.Success(user);[m
+[32m+[m
+[32m+[m[32m            }catch(Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Result<User>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<enOperationResult> DeleteUserAsync(int ID)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if(ID <= 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return enOperationResult.InvalidData;[m
+[32m+[m[32m            }[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var user = await _context.Users.FindAsync(ID);[m
+[32m+[m
+[32m+[m[32m                if(user == null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return enOperationResult.NotFound;[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                _context.Users.Remove(user);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m
+[32m+[m[41m                [m
+[32m+[m[32m                return enOperationResult.Success;[m
+[32m+[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger.LogCritical(ex.Message);[m
+[32m+[m[32m                return enOperationResult.Failed;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        public async Task<Result<User>> UpdateUserAsync(int ID, UpdateUserDTO dto)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            if (ID <= 0)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                return Result<User>.Failure(enOperationResult.InvalidData);[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var user = await _context.Users.FindAsync(ID);[m
+[32m+[m[32m                if (user == null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return Result<User>.Failure(enOperationResult.NotFound);[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                var conflict = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email && u.Id != ID);[m
+[32m+[m[32m                if (conflict != null)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    return Result<User>.Failure(enOperationResult.AlreadyExist);[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[41m                [m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Firstname))[m
+[32m+[m[32m                    user.Firstname = dto.Firstname;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Lastname))[m
+[32m+[m[32m                    user.Lastname = dto.Lastname;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Email))[m
+[32m+[m[32m                    user.Email = dto.Email;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Phonenumber))[m
+[32m+[m[32m                    user.Phonenumber = dto.Phonenumber;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Address))[m
+[32m+[m[32m                    user.Address = dto.Address;[m
+[32m+[m[32m                if (!string.IsNullOrEmpty(dto.Image))[m
+[32m+[m[32m                    user.Image = dto.Image;[m
+[32m+[m
+[32m+[m[32m                _context.Users.Update(user);[m
+[32m+[m
+[32m+[m[32m                await _context.SaveChangesAsync();[m
+[32m+[m[32m                _logger.LogInformation($"User {user.Id} has been updated at {DateTime.Now}");[m
+[32m+[m
+[32m+[m[32m                return Result<User>.Success(user);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception ex)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                _logger?.LogCritical(ex.Message);[m
+[32m+[m[32m                return Result<User>.Failure(enOperationResult.Failed);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierBLL/WezProjectifierBLL.csproj b/Backend/WezProjectifierBLL/WezProjectifierBLL.csproj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..98adddf[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierBLL/WezProjectifierBLL.csproj[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32m﻿<Project Sdk="Microsoft.NET.Sdk">[m
+[32m+[m
+[32m+[m[32m  <PropertyGroup>[m
+[32m+[m[32m    <TargetFramework>net10.0</TargetFramework>[m
+[32m+[m[32m    <ImplicitUsings>enable</ImplicitUsings>[m
+[32m+[m[32m    <Nullable>enable</Nullable>[m
+[32m+[m[32m  </PropertyGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <ProjectReference Include="..\WezProjectifierDAL\WezProjectifierDAL.csproj" />[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m</Project>[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/AssignedTask.cs b/Backend/WezProjectifierDAL/Models/AssignedTask.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..94905a6[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/AssignedTask.cs[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class AssignedTask[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int Id { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int TaskId { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int MemberId { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual Member Member { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public virtual ProjectTask Task { get; set; } = null!;[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/Member.cs b/Backend/WezProjectifierDAL/Models/Member.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..16627e7[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/Member.cs[m
+[36m@@ -0,0 +1,21 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class Member[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int Id { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int ProjectId { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int UserId { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string Role { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<AssignedTask> AssignedTasks { get; set; } = new List<AssignedTask>();[m
+[32m+[m
+[32m+[m[32m    public virtual Project Project { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public virtual User User { get; set; } = null!;[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/Project.cs b/Backend/WezProjectifierDAL/Models/Project.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..cfac7cf[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/Project.cs[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class Project[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int Id { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string Name { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string? Description { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int CreatedBy { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string? Image { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual User CreatedByNavigation { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<Member> Members { get; set; } = new List<Member>();[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/ProjectTask.cs b/Backend/WezProjectifierDAL/Models/ProjectTask.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..77d6a0c[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/ProjectTask.cs[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class ProjectTask[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int Id { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string Name { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string? Description { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string Priority { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string? Status { get; set; }[m
+[32m+[m
+[32m+[m[32m    public int ProjectId { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<AssignedTask> AssignedTasks { get; set; } = new List<AssignedTask>();[m
+[32m+[m
+[32m+[m[32m    public virtual Project Project { get; set; } = null!;[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/User.cs b/Backend/WezProjectifierDAL/Models/User.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eca875c[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/User.cs[m
+[36m@@ -0,0 +1,29 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class User[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int Id { get; set; }[m
+[32m+[m
+[32m+[m[32m    public string Email { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Username { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Password { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Firstname { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Lastname { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Phonenumber { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string Address { get; set; } = null!;[m
+[32m+[m
+[32m+[m[32m    public string? Image { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<Member> Members { get; set; } = new List<Member>();[m
+[32m+[m
+[32m+[m[32m    public virtual ICollection<Project> Projects { get; set; } = new List<Project>();[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/Models/WezDbContext.cs b/Backend/WezProjectifierDAL/Models/WezDbContext.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ccddc6f[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/Models/WezDbContext.cs[m
+[36m@@ -0,0 +1,119 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing Microsoft.EntityFrameworkCore;[m
+[32m+[m
+[32m+[m[32mnamespace WezProjectifier.Models;[m
+[32m+[m
+[32m+[m[32mpublic partial class WezDbContext : DbContext[m
+[32m+[m[32m{[m
+[32m+[m[32m    public WezDbContext()[m
+[32m+[m[32m    {[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public WezDbContext(DbContextOptions<WezDbContext> options)[m
+[32m+[m[32m        : base(options)[m
+[32m+[m[32m    {[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public virtual DbSet<AssignedTask> AssignedTasks { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual DbSet<Member> Members { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual DbSet<Project> Projects { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual DbSet<ProjectTask> Tasks { get; set; }[m
+[32m+[m
+[32m+[m[32m    public virtual DbSet<User> Users { get; set; }[m
+[32m+[m
+[32m+[m[32m    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)[m
+[32m+[m[32m#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.[m
+[32m+[m[32m        => optionsBuilder.UseSqlServer("Server=.;Database=WezDB;Trusted_Connection=True;TrustServerCertificate=True;");[m
+[32m+[m
+[32m+[m[32m    protected override void OnModelCreating(ModelBuilder modelBuilder)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        modelBuilder.Entity<AssignedTask>(entity =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            entity.Property(e => e.Id).HasColumnName("ID");[m
+[32m+[m[32m            entity.Property(e => e.MemberId).HasColumnName("MemberID");[m
+[32m+[m[32m            entity.Property(e => e.TaskId).HasColumnName("TaskID");[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.Member).WithMany(p => p.AssignedTasks)[m
+[32m+[m[32m                .HasForeignKey(d => d.MemberId)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_AssignedTasks_Member");[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.Task).WithMany(p => p.AssignedTasks)[m
+[32m+[m[32m                .HasForeignKey(d => d.TaskId)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_AssignedTasks_Tasks");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        modelBuilder.Entity<Member>(entity =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            entity.ToTable("Member");[m
+[32m+[m
+[32m+[m[32m            entity.Property(e => e.Id).HasColumnName("ID");[m
+[32m+[m[32m            entity.Property(e => e.ProjectId).HasColumnName("ProjectID");[m
+[32m+[m[32m            entity.Property(e => e.Role).HasMaxLength(10);[m
+[32m+[m[32m            entity.Property(e => e.UserId).HasColumnName("UserID");[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.Project).WithMany(p => p.Members)[m
+[32m+[m[32m                .HasForeignKey(d => d.ProjectId)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_Member_Projects");[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.User).WithMany(p => p.Members)[m
+[32m+[m[32m                .HasForeignKey(d => d.UserId)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_Member_User");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        modelBuilder.Entity<Project>(entity =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            entity.Property(e => e.Id).HasColumnName("ID");[m
+[32m+[m[32m            entity.Property(e => e.Name).HasMaxLength(50);[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Projects)[m
+[32m+[m[32m                .HasForeignKey(d => d.CreatedBy)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_Projects_User");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        modelBuilder.Entity<ProjectTask>(entity =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            entity.Property(e => e.Id).HasColumnName("ID");[m
+[32m+[m[32m            entity.Property(e => e.Name).HasMaxLength(50);[m
+[32m+[m[32m            entity.Property(e => e.Priority).HasMaxLength(25);[m
+[32m+[m[32m            entity.Property(e => e.ProjectId).HasColumnName("ProjectID");[m
+[32m+[m[32m            entity.Property(e => e.Status).HasMaxLength(25);[m
+[32m+[m
+[32m+[m[32m            entity.HasOne(d => d.Project).WithMany(p => p.Tasks)[m
+[32m+[m[32m                .HasForeignKey(d => d.ProjectId)[m
+[32m+[m[32m                .OnDelete(DeleteBehavior.ClientSetNull)[m
+[32m+[m[32m                .HasConstraintName("FK_Tasks_Projects");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        modelBuilder.Entity<User>(entity =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            entity.ToTable("User");[m
+[32m+[m
+[32m+[m[32m            entity.Property(e => e.Id).HasColumnName("ID");[m
+[32m+[m[32m            entity.Property(e => e.Address).HasMaxLength(50);[m
+[32m+[m[32m            entity.Property(e => e.Email).HasMaxLength(100).IsRequired();[m
+[32m+[m[32m            entity.Property(e => e.Firstname).HasMaxLength(50);[m
+[32m+[m[32m            entity.Property(e => e.Lastname).HasMaxLength(50);[m
+[32m+[m[32m            entity.Property(e => e.Password).HasMaxLength(256);[m
+[32m+[m[32m            entity.Property(e => e.Phonenumber).HasMaxLength(18);[m
+[32m+[m[32m            entity.Property(e => e.Username).HasMaxLength(50);[m
+[32m+[m
+[32m+[m[32m            entity.HasIndex(e => e.Email, "UQ_CONSTRAINT_EMAIL").IsUnique();[m
+[32m+[m[32m            entity.HasIndex(e => e.Username, "UQ_CONSTRAINT_USER").IsUnique();[m
+[32m+[m[32m            entity.HasIndex(e => e.Phonenumber, "UQ_CONSTRAINT_Phonenumber").IsUnique();[m
+[32m+[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        OnModelCreatingPartial(modelBuilder);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);[m
+[32m+[m[32m}[m
+[1mdiff --git a/Backend/WezProjectifierDAL/WezProjectifierDAL.csproj b/Backend/WezProjectifierDAL/WezProjectifierDAL.csproj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..94d846a[m
+[1m--- /dev/null[m
+[1m+++ b/Backend/WezProjectifierDAL/WezProjectifierDAL.csproj[m
+[36m@@ -0,0 +1,22 @@[m
+[32m+[m[32m﻿<Project Sdk="Microsoft.NET.Sdk">[m
+[32m+[m
+[32m+[m[32m  <PropertyGroup>[m
+[32m+[m[32m    <TargetFramework>net10.0</TargetFramework>[m
+[32m+[m[32m    <ImplicitUsings>enable</ImplicitUsings>[m
+[32m+[m[32m    <Nullable>enable</Nullable>[m
+[32m+[m[32m  </PropertyGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">[m
+[32m+[m[32m      <PrivateAssets>all</PrivateAssets>[m
+[32m+[m[32m      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>[m
+[32m+[m[32m    </PackageReference>[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />[m
+[32m+[m[32m    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">[m
+[32m+[m[32m      <PrivateAssets>all</PrivateAssets>[m
+[32m+[m[32m      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>[m
+[32m+[m[32m    </PackageReference>[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m</Project>[m
+[1mdiff --git a/Database.sql b/Database.sql[m
+[1mnew file mode 100644[m
+[1mindex 0000000..af02ea4[m
+[1m--- /dev/null[m
+[1m+++ b/Database.sql[m
+[36m@@ -0,0 +1,278 @@[m
+[32m+[m[32m﻿USE [master][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Database [WezDB]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mCREATE DATABASE [WezDB][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET COMPATIBILITY_LEVEL = 170[m
+[32m+[m[32mGO[m
+[32m+[m[32mIF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))[m
+[32m+[m[32mbegin[m
+[32m+[m[32mEXEC [WezDB].[dbo].[sp_fulltext_database] @action = 'enable'[m
+[32m+[m[32mend[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ANSI_NULL_DEFAULT OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ANSI_NULLS OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ANSI_PADDING OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ANSI_WARNINGS OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ARITHABORT OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET AUTO_CLOSE OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET AUTO_SHRINK OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET AUTO_UPDATE_STATISTICS ON[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET CURSOR_CLOSE_ON_COMMIT OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET CURSOR_DEFAULT  GLOBAL[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET CONCAT_NULL_YIELDS_NULL OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET NUMERIC_ROUNDABORT OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET QUOTED_IDENTIFIER OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET RECURSIVE_TRIGGERS OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET  DISABLE_BROKER[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET AUTO_UPDATE_STATISTICS_ASYNC OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET DATE_CORRELATION_OPTIMIZATION OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET TRUSTWORTHY OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ALLOW_SNAPSHOT_ISOLATION OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET PARAMETERIZATION SIMPLE[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET READ_COMMITTED_SNAPSHOT OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET HONOR_BROKER_PRIORITY OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET RECOVERY FULL[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET  MULTI_USER[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET PAGE_VERIFY CHECKSUM[m[41m  [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET DB_CHAINING OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF )[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET TARGET_RECOVERY_TIME = 60 SECONDS[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET DELAYED_DURABILITY = DISABLED[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET ACCELERATED_DATABASE_RECOVERY = OFF[m[41m  [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET OPTIMIZED_LOCKING = OFF[m[41m [m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET QUERY_STORE = ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)[m
+[32m+[m[32mGO[m
+[32m+[m[32mUSE [WezDB][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[AssignedTasks]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[AssignedTasks]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[TaskID] [int] NOT NULL,[m
+[32m+[m	[32m[MemberID] [int] NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_AssignedTasks] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[Member]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[Member]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[ProjectID] [int] NOT NULL,[m
+[32m+[m	[32m[UserID] [int] NOT NULL,[m
+[32m+[m	[32m[Role] [int] NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_Member] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[Priority]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[Priority]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[Name] [nvarchar](50) NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_Priority] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[ProjectRoles]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[ProjectRoles]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[RoleName] [nvarchar](20) NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_ProjectRoles] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[Projects]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[Projects]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[Name] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Description] [nvarchar](max) NULL,[m
+[32m+[m	[32m[CreatedBy] [int] NOT NULL,[m
+[32m+[m	[32m[Image] [nvarchar](max) NULL,[m
+[32m+[m[32m CONSTRAINT [PK_Projects] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[Status]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[Status]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[Name] [nvarchar](50) NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_Status] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[SystemRoles]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[SystemRoles]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[RoleName] [nvarchar](20) NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_SystemRoles] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[Tasks]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[Tasks]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[Name] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Description] [nvarchar](max) NULL,[m
+[32m+[m	[32m[Priority] [int] NOT NULL,[m
+[32m+[m	[32m[Status] [int] NOT NULL,[m
+[32m+[m	[32m[ProjectID] [int] NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_Tasks] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32m/****** Object:  Table [dbo].[User]    Script Date: 10/3/2026 11:15:04 AM ******/[m
+[32m+[m[32mSET ANSI_NULLS ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mSET QUOTED_IDENTIFIER ON[m
+[32m+[m[32mGO[m
+[32m+[m[32mCREATE TABLE [dbo].[User]([m
+[32m+[m	[32m[ID] [int] IDENTITY(1,1) NOT NULL,[m
+[32m+[m	[32m[Email] [nvarchar](100) NOT NULL,[m
+[32m+[m	[32m[Username] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Password] [nvarchar](256) NOT NULL,[m
+[32m+[m	[32m[Firstname] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Lastname] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Phonenumber] [nvarchar](18) NOT NULL,[m
+[32m+[m	[32m[Address] [nvarchar](50) NOT NULL,[m
+[32m+[m	[32m[Image] [nvarchar](max) NULL,[m
+[32m+[m	[32m[Role] [int] NOT NULL,[m
+[32m+[m[32m CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED[m[41m [m
+[32m+[m[32m([m
+[32m+[m	[32m[ID] ASC[m
+[32m+[m[32m)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY][m
+[32m+[m[32m) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[AssignedTasks]  WITH CHECK ADD  CONSTRAINT [FK_AssignedTasks_Member] FOREIGN KEY([MemberID])[m
+[32m+[m[32mREFERENCES [dbo].[Member] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[AssignedTasks] CHECK CONSTRAINT [FK_AssignedTasks_Member][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[AssignedTasks]  WITH CHECK ADD  CONSTRAINT [FK_AssignedTasks_Tasks] FOREIGN KEY([TaskID])[m
+[32m+[m[32mREFERENCES [dbo].[Tasks] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[AssignedTasks] CHECK CONSTRAINT [FK_AssignedTasks_Tasks][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member]  WITH CHECK ADD  CONSTRAINT [FK_Member_ProjectRoles] FOREIGN KEY([Role])[m
+[32m+[m[32mREFERENCES [dbo].[ProjectRoles] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member] CHECK CONSTRAINT [FK_Member_ProjectRoles][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member]  WITH CHECK ADD  CONSTRAINT [FK_Member_Projects] FOREIGN KEY([ProjectID])[m
+[32m+[m[32mREFERENCES [dbo].[Projects] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member] CHECK CONSTRAINT [FK_Member_Projects][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member]  WITH CHECK ADD  CONSTRAINT [FK_Member_User] FOREIGN KEY([UserID])[m
+[32m+[m[32mREFERENCES [dbo].[User] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Member] CHECK CONSTRAINT [FK_Member_User][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Projects]  WITH CHECK ADD  CONSTRAINT [FK_Projects_User] FOREIGN KEY([CreatedBy])[m
+[32m+[m[32mREFERENCES [dbo].[User] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Projects] CHECK CONSTRAINT [FK_Projects_User][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Tasks_Priority] FOREIGN KEY([Priority])[m
+[32m+[m[32mREFERENCES [dbo].[Priority] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Tasks_Priority][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Tasks_Projects] FOREIGN KEY([ProjectID])[m
+[32m+[m[32mREFERENCES [dbo].[Projects] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Tasks_Projects][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Tasks_Status] FOREIGN KEY([Status])[m
+[32m+[m[32mREFERENCES [dbo].[Status] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Tasks_Status][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[User]  WITH CHECK ADD  CONSTRAINT [FK_User_SystemRoles] FOREIGN KEY([Role])[m
+[32m+[m[32mREFERENCES [dbo].[SystemRoles] ([ID])[m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER TABLE [dbo].[User] CHECK CONSTRAINT [FK_User_SystemRoles][m
+[32m+[m[32mGO[m
+[32m+[m[32mUSE [master][m
+[32m+[m[32mGO[m
+[32m+[m[32mALTER DATABASE [WezDB] SET  READ_WRITE[m[41m [m
+[32m+[m[32mGO[m
+[1mdiff --git a/Migrations/AlterExistingTablesToAutoIncrement.sql b/Migrations/AlterExistingTablesToAutoIncrement.sql[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0d87c90[m
+[1m--- /dev/null[m
+[1m+++ b/Migrations/AlterExistingTablesToAutoIncrement.sql[m
+[36m@@ -0,0 +1,191 @@[m
+[32m+[m[32m/*[m
+[32m+[m[32m  In-place migration for an existing WezDB database.[m
+[32m+[m[32m  SQL Server cannot ALTER an existing column to IDENTITY, so this script adds[m
+[32m+[m[32m  an identity column to each existing table, redirects foreign keys, removes[m
+[32m+[m[32m  the old ID column, and renames the new column to ID.[m
+[32m+[m
+[32m+[m[32m  No tables are created or replaced. Existing rows and relationships remain,[m
+[32m+[m[32m  but ID values are regenerated as 1, 2, 3, ... for each table.[m
+[32m+[m[32m*/[m
+[32m+[m[32mSET NOCOUNT ON;[m
+[32m+[m[32mSET XACT_ABORT ON;[m
+[32m+[m
+[32m+[m[32mDECLARE @ExpectedTableCount int = 9;[m
+[32m+[m
+[32m+[m[32mIF ([m
+[32m+[m[32m    SELECT COUNT(*)[m
+[32m+[m[32m    FROM sys.tables AS t[m
+[32m+[m[32m    INNER JOIN sys.schemas AS s ON s.schema_id = t.schema_id[m
+[32m+[m[32m    INNER JOIN sys.columns AS c ON c.object_id = t.object_id[m
+[32m+[m[32m    WHERE s.name = N'dbo'[m
+[32m+[m[32m      AND t.name IN (N'AssignedTasks', N'Member', N'Priority', N'ProjectRoles', N'Projects', N'Status', N'SystemRoles', N'Tasks', N'User')[m
+[32m+[m[32m      AND c.name = N'ID'[m
+[32m+[m[32m) <> @ExpectedTableCount[m
+[32m+[m[32mBEGIN[m
+[32m+[m[32m    ;THROW 50000, 'The expected WezDB tables were not found. No changes were applied.', 1;[m
+[32m+[m[32mEND;[m
+[32m+[m
+[32m+[m[32mIF EXISTS ([m
+[32m+[m[32m    SELECT 1[m
+[32m+[m[32m    FROM sys.tables AS t[m
+[32m+[m[32m    INNER JOIN sys.schemas AS s ON s.schema_id = t.schema_id[m
+[32m+[m[32m    INNER JOIN sys.columns AS c ON c.object_id = t.object_id[m
+[32m+[m[32m    WHERE s.name = N'dbo'[m
+[32m+[m[32m      AND t.name IN (N'AssignedTasks', N'Member', N'Priority', N'ProjectRoles', N'Projects', N'Status', N'SystemRoles', N'Tasks', N'User')[m
+[32m+[m[32m      AND c.name = N'ID'[m
+[32m+[m[32m      AND c.is_identity = 1[m
+[32m+[m[32m)[m
+[32m+[m[32mBEGIN[m
+[32m+[m[32m    IF EXISTS ([m
+[32m+[m[32m        SELECT 1[m
+[32m+[m[32m        FROM sys.tables AS t[m
+[32m+[m[32m        INNER JOIN sys.schemas AS s ON s.schema_id = t.schema_id[m
+[32m+[m[32m        INNER JOIN sys.columns AS c ON c.object_id = t.object_id[m
+[32m+[m[32m        WHERE s.name = N'dbo'[m
+[32m+[m[32m          AND t.name IN (N'AssignedTasks', N'Member', N'Priority', N'ProjectRoles', N'Projects', N'Status', N'SystemRoles', N'Tasks', N'User')[m
+[32m+[m[32m          AND c.name = N'ID'[m
+[32m+[m[32m          AND c.is_identity = 0[m
+[32m+[m[32m    )[m
+[32m+[m[32m        ;THROW 50001, 'Some ID columns are already identity columns. The schema is in a mixed state, so no changes were applied.', 1;[m
+[32m+[m
+[32m+[m[32m    PRINT 'All ID columns are already IDENTITY columns. Nothing to do.';[m
+[32m+[m[32m    RETURN;[m
+[32m+[m[32mEND;[m
+[32m+[m
+[32m+[m[32mBEGIN TRY[m
+[32m+[m[32m    BEGIN TRANSACTION;[m
+[32m+[m
+[32m+[m[32m    -- Remove current foreign keys before changing the key columns.[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] DROP CONSTRAINT [FK_AssignedTasks_Member];[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] DROP CONSTRAINT [FK_AssignedTasks_Tasks];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] DROP CONSTRAINT [FK_Member_ProjectRoles];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] DROP CONSTRAINT [FK_Member_Projects];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] DROP CONSTRAINT [FK_Member_User];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] DROP CONSTRAINT [FK_Projects_User];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_Tasks_Priority];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_Tasks_Projects];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_Tasks_Status];[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] DROP CONSTRAINT [FK_User_SystemRoles];[m
+[32m+[m
+[32m+[m[32m    -- Add auto-increment columns to the existing tables.[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[Priority] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[ProjectRoles] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[Status] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[SystemRoles] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] ADD [NewID] int IDENTITY(1,1) NOT NULL;[m
+[32m+[m
+[32m+[m[32m    -- Point each relationship at the new identity values before old IDs are removed.[m
+[32m+[m[32m    UPDATE [dbo].[User][m
+[32m+[m[32m    SET [Role] = [SystemRoles].[NewID][m
+[32m+[m[32m    FROM [dbo].[User][m
+[32m+[m[32m    INNER JOIN [dbo].[SystemRoles] ON [SystemRoles].[ID] = [User].[Role];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Projects][m
+[32m+[m[32m    SET [CreatedBy] = [User].[NewID][m
+[32m+[m[32m    FROM [dbo].[Projects][m
+[32m+[m[32m    INNER JOIN [dbo].[User] ON [User].[ID] = [Projects].[CreatedBy];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Member][m
+[32m+[m[32m    SET [ProjectID] = [Projects].[NewID][m
+[32m+[m[32m    FROM [dbo].[Member][m
+[32m+[m[32m    INNER JOIN [dbo].[Projects] ON [Projects].[ID] = [Member].[ProjectID];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Member][m
+[32m+[m[32m    SET [UserID] = [User].[NewID][m
+[32m+[m[32m    FROM [dbo].[Member][m
+[32m+[m[32m    INNER JOIN [dbo].[User] ON [User].[ID] = [Member].[UserID];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Member][m
+[32m+[m[32m    SET [Role] = [ProjectRoles].[NewID][m
+[32m+[m[32m    FROM [dbo].[Member][m
+[32m+[m[32m    INNER JOIN [dbo].[ProjectRoles] ON [ProjectRoles].[ID] = [Member].[Role];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Tasks][m
+[32m+[m[32m    SET [Priority] = [Priority].[NewID][m
+[32m+[m[32m    FROM [dbo].[Tasks][m
+[32m+[m[32m    INNER JOIN [dbo].[Priority] ON [Priority].[ID] = [Tasks].[Priority];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Tasks][m
+[32m+[m[32m    SET [Status] = [Status].[NewID][m
+[32m+[m[32m    FROM [dbo].[Tasks][m
+[32m+[m[32m    INNER JOIN [dbo].[Status] ON [Status].[ID] = [Tasks].[Status];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[Tasks][m
+[32m+[m[32m    SET [ProjectID] = [Projects].[NewID][m
+[32m+[m[32m    FROM [dbo].[Tasks][m
+[32m+[m[32m    INNER JOIN [dbo].[Projects] ON [Projects].[ID] = [Tasks].[ProjectID];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[AssignedTasks][m
+[32m+[m[32m    SET [TaskID] = [Tasks].[NewID][m
+[32m+[m[32m    FROM [dbo].[AssignedTasks][m
+[32m+[m[32m    INNER JOIN [dbo].[Tasks] ON [Tasks].[ID] = [AssignedTasks].[TaskID];[m
+[32m+[m
+[32m+[m[32m    UPDATE [dbo].[AssignedTasks][m
+[32m+[m[32m    SET [MemberID] = [Member].[NewID][m
+[32m+[m[32m    FROM [dbo].[AssignedTasks][m
+[32m+[m[32m    INNER JOIN [dbo].[Member] ON [Member].[ID] = [AssignedTasks].[MemberID];[m
+[32m+[m
+[32m+[m[32m    -- Remove the old non-identity primary keys and columns.[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] DROP CONSTRAINT [PK_AssignedTasks];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] DROP CONSTRAINT [PK_Member];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Priority] DROP CONSTRAINT [PK_Priority];[m
+[32m+[m[32m    ALTER TABLE [dbo].[ProjectRoles] DROP CONSTRAINT [PK_ProjectRoles];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] DROP CONSTRAINT [PK_Projects];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Status] DROP CONSTRAINT [PK_Status];[m
+[32m+[m[32m    ALTER TABLE [dbo].[SystemRoles] DROP CONSTRAINT [PK_SystemRoles];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [PK_Tasks];[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] DROP CONSTRAINT [PK_User];[m
+[32m+[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Priority] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[ProjectRoles] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Status] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[SystemRoles] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] DROP COLUMN [ID];[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] DROP COLUMN [ID];[m
+[32m+[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.AssignedTasks.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.Member.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.Priority.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.ProjectRoles.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.Projects.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.Status.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.SystemRoles.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.Tasks.NewID', N'ID', N'COLUMN';[m
+[32m+[m[32m    EXEC sys.sp_rename N'dbo.[User].NewID', N'ID', N'COLUMN';[m
+[32m+[m
+[32m+[m[32m    -- Restore the original primary-key and foreign-key constraints.[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] ADD CONSTRAINT [PK_AssignedTasks] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] ADD CONSTRAINT [PK_Member] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Priority] ADD CONSTRAINT [PK_Priority] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[ProjectRoles] ADD CONSTRAINT [PK_ProjectRoles] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] ADD CONSTRAINT [PK_Projects] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Status] ADD CONSTRAINT [PK_Status] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[SystemRoles] ADD CONSTRAINT [PK_SystemRoles] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] ADD CONSTRAINT [PK_Tasks] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] ADD CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([ID]);[m
+[32m+[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] WITH CHECK ADD CONSTRAINT [FK_AssignedTasks_Member] FOREIGN KEY ([MemberID]) REFERENCES [dbo].[Member] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[AssignedTasks] WITH CHECK ADD CONSTRAINT [FK_AssignedTasks_Tasks] FOREIGN KEY ([TaskID]) REFERENCES [dbo].[Tasks] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] WITH CHECK ADD CONSTRAINT [FK_Member_ProjectRoles] FOREIGN KEY ([Role]) REFERENCES [dbo].[ProjectRoles] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] WITH CHECK ADD CONSTRAINT [FK_Member_Projects] FOREIGN KEY ([ProjectID]) REFERENCES [dbo].[Projects] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Member] WITH CHECK ADD CONSTRAINT [FK_Member_User] FOREIGN KEY ([UserID]) REFERENCES [dbo].[User] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Projects] WITH CHECK ADD CONSTRAINT [FK_Projects_User] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[User] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] WITH CHECK ADD CONSTRAINT [FK_Tasks_Priority] FOREIGN KEY ([Priority]) REFERENCES [dbo].[Priority] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] WITH CHECK ADD CONSTRAINT [FK_Tasks_Projects] FOREIGN KEY ([ProjectID]) REFERENCES [dbo].[Projects] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[Tasks] WITH CHECK ADD CONSTRAINT [FK_Tasks_Status] FOREIGN KEY ([Status]) REFERENCES [dbo].[Status] ([ID]);[m
+[32m+[m[32m    ALTER TABLE [dbo].[User] WITH CHECK ADD CONSTRAINT [FK_User_SystemRoles] FOREIGN KEY ([Role]) REFERENCES [dbo].[SystemRoles] ([ID]);[m
+[32m+[m
+[32m+[m[32m    COMMIT TRANSACTION;[m
+[32m+[m[32m    PRINT 'All existing table IDs are now IDENTITY(1,1).';[m
+[32m+[m[32mEND TRY[m
+[32m+[m[32mBEGIN CATCH[m
+[32m+[m[32m    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;[m
+[32m+[m[32m    ;THROW;[m
+[32m+[m[32mEND CATCH;[m
+[1mdiff --git a/Setup-Database.cmd b/Setup-Database.cmd[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7225b2c[m
+[1m--- /dev/null[m
+[1m+++ b/Setup-Database.cmd[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32m@echo off[m
+[32m+[m[32msetlocal[m
+[32m+[m[32mpowershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0Setup-Database.ps1"[m
+[32m+[m[32mset "exitCode=%ERRORLEVEL%"[m
+[32m+[m[32mif not "%exitCode%"=="0" ([m
+[32m+[m[32m    echo.[m
+[32m+[m[32m    echo Database setup failed. See the error above.[m
+[32m+[m[32m    pause[m
+[32m+[m[32m)[m
+[32m+[m[32mexit /b %exitCode%[m
+[1mdiff --git a/Setup-Database.ps1 b/Setup-Database.ps1[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8d2410c[m
+[1m--- /dev/null[m
+[1m+++ b/Setup-Database.ps1[m
+[36m@@ -0,0 +1,40 @@[m
+[32m+[m[32m[CmdletBinding()][m
+[32m+[m[32mparam([m
+[32m+[m[32m    [string]$ServerInstance = 'localhost',[m
+[32m+[m[32m    [string]$DatabaseName = 'WezDB'[m
+[32m+[m[32m)[m
+[32m+[m
+[32m+[m[32m$ErrorActionPreference = 'Stop'[m
+[32m+[m[32m$projectRoot = Split-Path -Parent $PSCommandPath[m
+[32m+[m[32m$sqlcmd = Get-Command sqlcmd.exe -ErrorAction Stop[m
+[32m+[m
+[32m+[m[32mfunction Invoke-SqlScript {[m
+[32m+[m[32m    param([m
+[32m+[m[32m        [string]$Database,[m
+[32m+[m[32m        [string]$ScriptPath[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    & $sqlcmd.Source -S $ServerInstance -E -C -d $Database -b -i $ScriptPath[m
+[32m+[m[32m    if ($LASTEXITCODE -ne 0) {[m
+[32m+[m[32m        throw "SQL script failed: $ScriptPath"[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m$databaseId = & $sqlcmd.Source -S $ServerInstance -E -C -d master -b -h -1 -W -Q "SET NOCOUNT ON; SELECT DB_ID(N'$($DatabaseName.Replace("'", "''"))');"[m
+[32m+[m[32mif ($LASTEXITCODE -ne 0) {[m
+[32m+[m[32m    throw "Could not connect to SQL Server instance '$ServerInstance' using Windows authentication."[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mif ([string]::IsNullOrWhiteSpace(($databaseId -join ''))) {[m
+[32m+[m[32m    Write-Host "Creating $DatabaseName on $ServerInstance..."[m
+[32m+[m[32m    if ($DatabaseName -ne 'WezDB') {[m
+[32m+[m[32m        throw 'Database.sql creates WezDB. Use the default database name or update Database.sql before changing this parameter.'[m
+[32m+[m[32m    }[m
+[32m+[m[32m    Invoke-SqlScript -Database 'master' -ScriptPath (Join-Path $projectRoot 'Database.sql')[m
+[32m+[m[32m}[m
+[32m+[m[32melse {[m
+[32m+[m[32m    Write-Host "Applying IDENTITY migration to $DatabaseName on $ServerInstance..."[m
+[32m+[m[32m    Invoke-SqlScript -Database $DatabaseName -ScriptPath (Join-Path $projectRoot 'Migrations\AlterExistingTablesToAutoIncrement.sql')[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mWrite-Host "Database setup completed successfully." -ForegroundColor Green[m

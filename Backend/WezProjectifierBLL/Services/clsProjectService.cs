@@ -47,6 +47,17 @@ namespace WezProjectifierBLL.Services
 
                 await _context.SaveChangesAsync();
 
+                Member mr = new Member
+                {
+                    ProjectId = pr.Id,
+                    UserId = pr.CreatedBy,
+                    Role = "Owner"
+                };
+
+                await _context.Members.AddAsync(mr);
+
+                await _context.SaveChangesAsync(); 
+
                 var newAddedProject = await _context.Projects
     .AsNoTracking()
     .Where(p => p.Id == pr.Id)
@@ -108,6 +119,39 @@ namespace WezProjectifierBLL.Services
                     Image = p.Image
                 }).AsNoTracking().ToListAsync();
             return projects;
+        }
+
+        public async Task<Result<HashSet<ProjectSummaryDTO>>> GetAllProjectsForUser(int userId)
+        {
+            if (userId <= 0)
+                return Result<HashSet<ProjectSummaryDTO>>.Failure(enOperationResult.InvalidData);
+            try
+            {
+
+                var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                    return Result<HashSet<ProjectSummaryDTO>>.Failure(enOperationResult.NotFound);
+
+                var joinedProjects = await _context.Members
+                    .Where(m => m.UserId == userId)
+                    .Join(_context.Projects,
+                    m => m.ProjectId,
+                    p => p.Id,
+                    (m, p) => new ProjectSummaryDTO
+                    {
+                        ProjectID = p.Id,
+                        ProjectName = p.Name,
+                        Description = p.Description,
+                        Image = p.Image
+                    }).ToHashSetAsync();
+
+                return Result<HashSet<ProjectSummaryDTO>>.Success(joinedProjects);
+
+            }catch(Exception ex)
+            {
+                _logger.LogCritical(DateTime.Now + " - " + ex.Message);
+                return Result<HashSet<ProjectSummaryDTO>>.Failure(enOperationResult.Failed);
+            }
         }
 
         public async Task<Result<GetProjectInfoDTO>> GetProjectInfoAsync(int ProjectID)
