@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
 using System.Threading.RateLimiting;
+using WezProjectifier.Middleware;
 using WezProjectifier.Models;
+using WezProjectifier.Policies;
 using WezProjectifierBLL.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddDbContext<WezDbContext>(
     options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"])
@@ -26,6 +26,30 @@ builder.Services.AddScoped<clsMemberService>();
 builder.Services.AddScoped<clsAssignedTasksService>();
 builder.Services.AddScoped<clsLoginService>();
 builder.Services.AddScoped<clsAuthService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ProjectMemberOrAdmin", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new ProjectRequirements());
+    });
+    options.AddPolicy("ProjectAdmin", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new ProjectAdminRequirement());
+    });
+    options.AddPolicy("UserOwnsResource", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new UserRequirement());
+    });
+    // Keep your existing UserOwnsResource policy here.
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, HasToBeProjectMember>();
+builder.Services.AddScoped<IAuthorizationHandler, HasToBeAdminProjectHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, UserHandler>();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -121,6 +145,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+app.UseMiddleware<ForbiddenRequestLoggingMiddleware>();
 
 app.UseAuthorization();
 

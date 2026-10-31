@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WezProjectifier.Models;
 using WezProjectifierBLL;
 using WezProjectifierBLL.DTOs.Projects;
 using WezProjectifierBLL.DTOs.Tasks;
@@ -12,16 +14,22 @@ namespace WezProjectifier.Controllers
     public class ProjectTaskController : ControllerBase
     {
         private readonly clsTaskService _tasks;
-        public ProjectTaskController (clsTaskService taskService)
+        private readonly IAuthorizationService _authorizationService;
+        public ProjectTaskController (clsTaskService taskService, IAuthorizationService authorizationService)
         {
             _tasks = taskService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("all/{projectId::int}",Name = "GetAllTasks")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<List<TaskDTO>>> GetAllTasksForProjectAsync(int projectId)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, projectId, "ProjectAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _tasks.GetAllTasksAsync(projectId);
 
             return result.OperationResult switch
@@ -35,11 +43,15 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpPost("addTask",Name = "AddTaskToProject")]
+        [Authorize]
         [ProducesResponseType(201)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         public async Task<ActionResult<bool>> AddNewTaskToProject(AddTaskRequestDTO dto)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, dto.ProjectID, "ProjectAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _tasks.CreateAddTaskToProjectAsync(dto);
 
             return result.OperationResult switch 
@@ -54,12 +66,16 @@ namespace WezProjectifier.Controllers
         
 
         [HttpPut("editTask")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         public async Task<ActionResult<UpdateTaskResponseDTO>> UpdateTask(
             [FromBody] UpdateTaskRequestDTO dto)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, dto.ProjectID, "ProjectAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _tasks.UpdateTaskAsync(dto);
 
             return result.OperationResult switch 
@@ -72,11 +88,15 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpDelete("delete/{projectId::int}/{taskId::int}",Name = "DeleteTaskFromProject")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         public async Task<ActionResult<bool>> DeleteTaskFromProjectAsync(int projectId,int taskId)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, projectId, "ProjectAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _tasks.DeleteTaskFromProjectAsync(projectId, taskId);
 
             return result.OperationResult switch

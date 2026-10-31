@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WezProjectifierBLL;
 using WezProjectifierBLL.DTOs.Projects;
@@ -11,12 +12,15 @@ namespace WezProjectifier.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly clsProjectService _projects;
-        public ProjectController(clsProjectService projects)
+        private readonly IAuthorizationService _authroizationService;
+        public ProjectController(clsProjectService projects, IAuthorizationService authorizationService)
         {
             _projects = projects;
+            _authroizationService = authorizationService;
         }
 
         [HttpGet("all", Name = "FetchAllProjects")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(500)]
         public async Task<ActionResult<ProjectSummaryDTO>> GetAllProjectsAsync()
@@ -26,10 +30,14 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpGet("getById/{id::int}",Name = "GetProjectByID")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<GetProjectInfoDTO>> GetProjectByID(int id)
         {
+            var authResult = await _authroizationService.AuthorizeAsync(User, id, "ProjectMemberOrAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _projects.GetProjectInfoAsync(id);
 
             return result.OperationResult switch
@@ -46,6 +54,7 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpPost("Add", Name = "AddNewProject")]
+        [Authorize]
         [ProducesResponseType(201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AddNewProjectResponseDTO>> AddNewProject([FromBody] AddNewProjectRequestDTO dto)
@@ -66,9 +75,13 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpPut("update/",Name = "UpdateProject")]
+        [Authorize]
         public async Task<ActionResult<AddNewProjectResponseDTO>> UpdateExistingProject(
             [FromBody] UpdateProjectRequestDTO dto)
         {
+            var authResult = await _authroizationService.AuthorizeAsync(User,dto.ID,"ProjectAdmin");
+            if (!authResult.Succeeded)
+                return Forbid();
             var updated = await _projects.UpdateProjectAsync(dto);
 
             return updated.OperationResult switch
@@ -84,10 +97,12 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpDelete("delete/{id::int}", Name = "DeleteProject")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<bool>> DeleteProjectAsync(int id)
         {
+            var authResult = await _authroizationService.AuthorizeAsync(User,id,"ProjectAdmin");
             var result = await _projects.DeleteProjecyAsync(id);
             return result.OperationResult switch {
                 enOperationResult.Success => Ok($"Succesfuly deleted the proejct with id {id}"),
@@ -99,11 +114,15 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpGet("getProjectFor/{userId::int}")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         public async Task<ActionResult<HashSet<ProjectSummaryDTO>>> GetAllProjectsForUser(int userId)
         {
+            var authResult = await _authroizationService.AuthorizeAsync(User,userId, "UserOwnsResource");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _projects.GetAllProjectsForUser(userId);
 
             return result.OperationResult switch

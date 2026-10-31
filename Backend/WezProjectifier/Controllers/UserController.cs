@@ -12,14 +12,16 @@ namespace WezProjectifier.Controllers
     public class UserController : ControllerBase
     {
         private readonly clsUserService _user;
-        public UserController(clsUserService user)
+        private readonly IAuthorizationService _authorizationService;
+        public UserController(clsUserService user,
+            IAuthorizationService authorizationService)
         {
             _user = user;
+            _authorizationService = authorizationService;
         }
 
 
         [HttpPost(Name = "create")]
-        [Authorize]
         [ProducesResponseType((int)StatusCodes.Status201Created)]
         [ProducesResponseType((int)StatusCodes.Status400BadRequest)]
         [ProducesResponseType((int)StatusCodes.Status409Conflict)]
@@ -60,12 +62,16 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpGet("getById/{id::int}")]
+        [Authorize]
         [ProducesResponseType((int)StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetUserByIdAsync(int id)
         {
+            var authroizationResult = await _authorizationService.AuthorizeAsync(User, id, "UserOwnsResource");
+            if (!authroizationResult.Succeeded)
+                return Forbid();
             var result = await _user.FindUserAsync(id);
 
             return result.OperationResult switch
@@ -80,11 +86,17 @@ namespace WezProjectifier.Controllers
             };
         }
         [HttpDelete("delete/{id::int}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUserAsync(int id)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, id, "UserOwnsResource");
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
             var result = await _user.DeleteUserAsync(id);
             return result switch
             {
@@ -99,11 +111,15 @@ namespace WezProjectifier.Controllers
         }
 
         [HttpPatch("update/{id::int}")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> UpdateUserAsync(int id, [FromBody] UpdateUserDTO dto)
         {
+            var authResult = await _authorizationService.AuthorizeAsync(User, id, "UserOwnsResource");
+            if (!authResult.Succeeded)
+                return Forbid();
             var result = await _user.UpdateUserAsync(id, dto);
             return result.OperationResult switch
             {
